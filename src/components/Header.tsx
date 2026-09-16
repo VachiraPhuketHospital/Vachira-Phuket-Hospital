@@ -75,6 +75,14 @@ export const Header: React.FC<HeaderProps> = ({
               {t.home}
             </button>
 
+            <button
+              id="header-quick-search-btn"
+              onClick={onOpenSearchModal}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+            >
+              <Search className="w-4 h-4 text-emerald-600" />
+              <span>{t.searchDrug}</span>
+            </button>
 
             <button
               id="header-nav-contact"
