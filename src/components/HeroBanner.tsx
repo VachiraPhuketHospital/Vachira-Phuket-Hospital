@@ -1,26 +1,33 @@
 import React from 'react';
-import { Pill, ShieldCheck, HeartPulse, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Pill, HeartPulse, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { BannerConfig, Language } from '../types';
 import { TRANSLATIONS } from '../data/translations';
 
 interface HeroBannerProps {
   bannerConfig: BannerConfig;
   onOpenDrugGuide: () => void;
-  onOpenConsult: () => void;
+  onOpenConsult?: () => void;
   language?: Language;
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   bannerConfig,
   onOpenDrugGuide,
-  onOpenConsult,
   language = 'th',
 }) => {
   const t = TRANSLATIONS[language];
   const isEn = language === 'en';
 
+  const bannerImageUrl = bannerConfig.backgroundImageUrl || 
+    'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1920&q=80';
+
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-white shadow-xl my-4 sm:my-6">
+    <section 
+      className="relative overflow-hidden rounded-3xl text-white shadow-xl my-4 sm:my-6 bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6, 78, 59, 0.85), rgba(15, 23, 42, 0.90)), url('${bannerImageUrl}')`
+      }}
+    >
       {/* Background Decorative Healthcare Elements */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -34,10 +41,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         </div>
 
         {/* Hero Headings */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-2 leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-2 leading-tight drop-shadow-sm">
           {isEn ? t.headline : bannerConfig.headline}
         </h1>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-emerald-300 tracking-tight mb-6">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-emerald-300 tracking-tight mb-6 drop-shadow-sm">
           {isEn ? t.subheadline : bannerConfig.subheadline}
         </h2>
 
@@ -46,30 +53,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           <p className="text-base sm:text-lg font-medium text-slate-100">
             {isEn ? t.hospitalName : bannerConfig.hospitalName}
           </p>
-          <p className="text-sm sm:text-base text-slate-300 font-light leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-200 font-light leading-relaxed">
             {isEn ? 'Delivering patient-centered, evidence-based medication safety and hospital clinical excellence.' : bannerConfig.vision}
           </p>
         </div>
 
-        {/* Action Buttons: [ข้อมูลการใช้ยา] [ปรึกษาเภสัชกร] */}
+        {/* Action Button: [ข้อมูลการใช้ยา] */}
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
             id="hero-btn-drug-info"
             onClick={onOpenDrugGuide}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-950/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-950/40 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
           >
             <Pill className="w-5 h-5" />
             <span>{isEn ? t.primaryButtonText : bannerConfig.primaryButtonText}</span>
             <ChevronRight className="w-4 h-4 opacity-70" />
-          </button>
-
-          <button
-            id="hero-btn-consult-pharmacist"
-            onClick={onOpenConsult}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-emerald-100 bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
-          >
-            <ShieldCheck className="w-5 h-5 text-emerald-300" />
-            <span>{isEn ? t.secondaryButtonText : bannerConfig.secondaryButtonText}</span>
           </button>
         </div>
 
@@ -96,3 +94,5 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     </section>
   );
 };
+
+
