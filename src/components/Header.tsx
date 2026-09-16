@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Phone, Clock, Search, Globe } from 'lucide-react';
+import { Menu, Search, Globe } from 'lucide-react';
 import { PublicNavSection, Language } from '../types';
 import { TRANSLATIONS } from '../data/translations';
 
@@ -82,15 +82,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Search className="w-4 h-4 text-emerald-600" />
               <span>{t.searchDrug}</span>
-            </button>
-
-            <button
-              id="header-nav-contact"
-              onClick={() => onNavigate('contact')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.contactStaff}</span>
             </button>
 
             {/* Clickable Interactive Language Switcher for TH / EN */}
