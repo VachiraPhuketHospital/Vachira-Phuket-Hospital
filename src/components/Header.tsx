@@ -84,32 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{t.searchDrug}</span>
             </button>
 
-            <button
-              id="header-quick-queue-btn"
-              onClick={onOpenQueueModal}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
-            >
-              <Clock className="w-4 h-4 text-emerald-600" />
-              <span>{t.checkQueue}</span>
-            </button>
 
-            <button
-              id="header-nav-contact"
-              onClick={() => onNavigate('contact')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.contactStaff}</span>
-            </button>
-
-            <button
-              id="header-consult-btn"
-              onClick={onOpenConsultModal}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition-colors"
-            >
-              <ShieldCheck className="w-4 h-4 text-teal-600" />
-              <span>{t.consultPharmacist}</span>
-            </button>
 
             {/* Clickable Interactive Language Switcher for TH / EN */}
             <div
