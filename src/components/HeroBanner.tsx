@@ -25,14 +25,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     <section 
       className="relative overflow-hidden rounded-3xl text-white shadow-xl my-4 sm:my-6 bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `linear-gradient(rgba(6, 78, 59, 0.85), rgba(15, 23, 42, 0.90)), url('${bannerImageUrl}')`
+        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.65)), url('${bannerImageUrl}')`
       }}
     >
-      {/* Background Decorative Healthcare Elements */}
-      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
-
       <div className="relative max-w-5xl mx-auto px-6 py-12 sm:py-16 md:py-20 text-center">
         {/* Hospital Branding Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs sm:text-sm font-medium mb-6 backdrop-blur-md">
@@ -93,6 +88,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       </div>
     </section>
   );
+};
+
+
 };
 
 
