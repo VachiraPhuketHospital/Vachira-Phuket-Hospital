@@ -22,6 +22,8 @@ import {
   EyeOff,
   Eye,
   RotateCcw,
+  Clock,
+  FolderTree,
 } from 'lucide-react';
 import { AdminSection } from '../../types';
 
@@ -49,7 +51,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [hiddenMenus, setHiddenMenus] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('vachira_admin_hidden_menus');
+      const saved = localStorage.getItem('huahin_admin_hidden_menus');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -59,16 +61,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   useEffect(() => {
     const handleUpdate = () => {
       try {
-        const saved = localStorage.getItem('vachira_admin_hidden_menus');
+        const saved = localStorage.getItem('huahin_admin_hidden_menus');
         setHiddenMenus(saved ? JSON.parse(saved) : []);
       } catch {
         setHiddenMenus([]);
       }
     };
-    window.addEventListener('vachira_admin_menus_changed', handleUpdate);
+    window.addEventListener('huahin_admin_menus_changed', handleUpdate);
     window.addEventListener('storage', handleUpdate);
     return () => {
-      window.removeEventListener('vachira_admin_menus_changed', handleUpdate);
+      window.removeEventListener('huahin_admin_menus_changed', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
     };
   }, []);
@@ -78,8 +80,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     const updated = [...hiddenMenus, menuId];
     setHiddenMenus(updated);
     try {
-      localStorage.setItem('vachira_admin_hidden_menus', JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent('vachira_admin_menus_changed', { detail: updated }));
+      localStorage.setItem('huahin_admin_hidden_menus', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('huahin_admin_menus_changed', { detail: updated }));
     } catch (err) {
       console.error(err);
     }
@@ -88,8 +90,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const handleRestoreAllMenus = () => {
     setHiddenMenus([]);
     try {
-      localStorage.removeItem('vachira_admin_hidden_menus');
-      window.dispatchEvent(new CustomEvent('vachira_admin_menus_changed', { detail: [] }));
+      localStorage.removeItem('huahin_admin_hidden_menus');
+      window.dispatchEvent(new CustomEvent('huahin_admin_menus_changed', { detail: [] }));
     } catch (err) {
       console.error(err);
     }
@@ -104,11 +106,25 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   }[] = [
     { id: 'dashboard', label: 'Dashboard ภาพรวม', icon: LayoutDashboard },
     {
+      id: 'queues',
+      label: 'จัดการคิวรับยาผู้ป่วยนอก',
+      icon: Clock,
+      badge: 'Real-time',
+      badgeClass: 'bg-emerald-600 text-white font-bold',
+    },
+    {
       id: 'consultations',
       label: 'ข้อความปรึกษาเภสัชกร',
       icon: MessageSquare,
       badge: pendingConsultCount > 0 ? `${pendingConsultCount} รอตอบ` : undefined,
       badgeClass: 'bg-amber-500 text-white font-bold animate-pulse',
+    },
+    {
+      id: 'menu_topics',
+      label: '📁 จัดการหัวข้อเมนู/เนื้อหา',
+      icon: FolderTree,
+      badge: 'เมนูใหม่',
+      badgeClass: 'bg-emerald-600 text-white font-bold',
     },
     { id: 'drugs', label: 'จัดการข้อมูลยา', icon: Pill },
     { id: 'infographics', label: 'จัดการขั้นตอนรับยา (3 รูป)', icon: Image },
@@ -142,7 +158,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             <span className="text-xl">💊</span>
             <div>
               <div className="text-xs font-extrabold uppercase tracking-wide text-emerald-400">
-                กลุ่มงานเภสัชกรรม • รพ.วชิระภูเก็ต
+                กลุ่มงานเภสัชกรรม • รพ.หัวหิน
               </div>
               <div className="text-sm font-bold text-white flex items-center gap-1.5">
                 <span>ระบบจัดการหลังบ้าน (Admin Console)</span>
