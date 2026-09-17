@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import {
   Home,
+  Building2,
+  Network,
   Pill,
-  AlertTriangle,
-  ClipboardList,
-  BookOpen,
+  FileCheck,
   Newspaper,
-  FileText,
-  PhoneCall,
+  GraduationCap,
+  CalendarCheck,
   ChevronDown,
   ChevronRight,
   Lock,
   X,
-  Hospital,
-  Sparkles
 } from 'lucide-react';
 import { PublicNavSection, Language } from '../types';
 import { TRANSLATIONS } from '../data/translations';
+import { NEW_SIDEBAR_MENU } from '../data/sidebarMenuData';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -36,13 +35,64 @@ export const Sidebar: React.FC<SidebarProps> = ({
   language = 'th',
 }) => {
   const t = TRANSLATIONS[language];
-  // Accordion state
-  const [openDrugMenu, setOpenDrugMenu] = useState(true);
-  const [openSafetyMenu, setOpenSafetyMenu] = useState(false);
-  const [openServiceMenu, setOpenServiceMenu] = useState(false);
 
-  const handleSelect = (section: PublicNavSection) => {
-    onNavigate(section);
+  // Map category icons
+  const getCategoryIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'Building2':
+        return <Building2 className="w-5 h-5 text-emerald-600 shrink-0" />;
+      case 'Network':
+        return <Network className="w-5 h-5 text-teal-600 shrink-0" />;
+      case 'Pill':
+        return <Pill className="w-5 h-5 text-emerald-600 shrink-0" />;
+      case 'FileCheck':
+        return <FileCheck className="w-5 h-5 text-amber-600 shrink-0" />;
+      case 'Newspaper':
+        return <Newspaper className="w-5 h-5 text-blue-600 shrink-0" />;
+      case 'GraduationCap':
+        return <GraduationCap className="w-5 h-5 text-purple-600 shrink-0" />;
+      case 'CalendarCheck':
+        return <CalendarCheck className="w-5 h-5 text-rose-600 shrink-0" />;
+      default:
+        return <Pill className="w-5 h-5 text-emerald-600 shrink-0" />;
+    }
+  };
+
+  // State to track which categories and nested groups are expanded
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    about: false,
+    structure: false,
+    drug_info: true, // open by default
+    policies_guidelines: false,
+    news_pr: false,
+    academic: false,
+    activities: false,
+  });
+
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    group_amr: true,
+    group_warfarin: false,
+    group_cannabis: false,
+    group_cpg: true,
+  });
+
+  const toggleCategory = (catId: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [catId]: !prev[catId],
+    }));
+  };
+
+  const toggleGroup = (groupId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupId]: !prev[groupId],
+    }));
+  };
+
+  const handleSelect = (sectionId: string) => {
+    onNavigate(sectionId as PublicNavSection);
     onClose();
   };
 
@@ -57,23 +107,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Drawer */}
       <aside
         id="main-sidebar"
-        className={`fixed top-0 bottom-0 left-0 z-50 w-80 max-w-[85vw] bg-white border-r border-slate-200 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-84 max-w-[88vw] bg-white border-r border-slate-200 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Sidebar Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-emerald-800 to-teal-800 text-white">
           <div className="flex items-center gap-3">
-<div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center p-1.5 shadow-inner overflow-hidden">
-  <img 
-    src="https://upload.wikimedia.org/wikipedia/th/1/12/Logo_of_Vachira_Phuket_Hospital.jpg" 
-    alt="Logo of Vachira Phuket Hospital" 
-    className="w-full h-full object-contain rounded-lg"
-  />
-</div>
+            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center p-1.5 shadow-inner overflow-hidden">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/th/1/12/Logo_of_Vachira_Phuket_Hospital.jpg"
+                alt="Logo of Hospital"
+                className="w-full h-full object-contain rounded-lg"
+              />
+            </div>
             <div>
               <h2 className="font-bold text-sm tracking-tight leading-tight">
                 {t.hospitalName}
@@ -85,15 +135,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-emerald-100 hover:bg-white/10"
+            className="p-1.5 rounded-lg text-emerald-100 hover:bg-white/10 transition-colors"
             aria-label="ปิดเมนู"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 text-sm scrollbar-thin">
+        {/* Scrollable Navigation Items */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1 text-sm scrollbar-thin">
           {/* 🏠 หน้าแรก */}
           <button
             id="nav-home"
@@ -105,271 +155,118 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }`}
           >
             <Home className="w-5 h-5 text-emerald-600" />
-            <span>{t.home}</span>
+            <span className="font-semibold">{t.home}</span>
           </button>
 
-          {/* 💊 ข้อมูลยา (Accordion) */}
-          <div className="pt-1">
-            <button
-              id="menu-toggle-drugs"
-              onClick={() => setOpenDrugMenu(!openDrugMenu)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <Pill className="w-5 h-5 text-emerald-600" />
-                <span className="font-semibold text-slate-800">{t.drugInfo}</span>
+          {/* New Dynamic Menu Sections */}
+          {NEW_SIDEBAR_MENU.map((category) => {
+            const isCatExpanded = !!expandedCategories[category.id];
+
+            return (
+              <div key={category.id} className="pt-1 border-t border-slate-100/80">
+                {/* Category Header Button */}
+                <button
+                  id={`menu-toggle-${category.id}`}
+                  onClick={() => toggleCategory(category.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                    isCatExpanded
+                      ? 'text-slate-900 bg-slate-50'
+                      : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                    {getCategoryIcon(category.iconName)}
+                    <span className="truncate">{category.title}</span>
+                  </div>
+                  {isCatExpanded ? (
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                  )}
+                </button>
+
+                {/* Category Children */}
+                {isCatExpanded && (
+                  <div className="ml-4 pl-2.5 border-l-2 border-emerald-100 my-1 space-y-0.5">
+                    {/* Direct Sub-items */}
+                    {category.items?.map((item) => {
+                      const isItemActive = activeSection === item.id;
+
+                      return (
+                        <button
+                          key={item.id}
+                          id={`nav-${item.id}`}
+                          onClick={() => handleSelect(item.id)}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-start gap-1.5 ${
+                            isItemActive
+                              ? 'text-emerald-800 bg-emerald-50 font-semibold shadow-2xs'
+                              : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          <span className="text-slate-400 select-none">├─</span>
+                          <span className="flex-1 leading-snug">{item.title}</span>
+                          {item.badge && (
+                            <span className="shrink-0 text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-normal">
+                              {item.badge}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+
+                    {/* Nested Subgroups (e.g. AMR, Warfarin, Cannabis, CPG) */}
+                    {category.groups?.map((group) => {
+                      const isGroupExpanded = !!expandedGroups[group.id];
+
+                      return (
+                        <div key={group.id} className="pt-1">
+                          <button
+                            onClick={(e) => toggleGroup(group.id, e)}
+                            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100/70 transition-colors"
+                          >
+                            <span className="truncate pr-1 text-left font-bold">
+                              • {group.title}
+                            </span>
+                            {isGroupExpanded ? (
+                              <ChevronDown className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            ) : (
+                              <ChevronRight className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            )}
+                          </button>
+
+                          {isGroupExpanded && (
+                            <div className="ml-3 pl-2 border-l border-emerald-200 mt-1 space-y-0.5">
+                              {group.items.map((subItem) => {
+                                const isSubActive = activeSection === subItem.id;
+                                return (
+                                  <button
+                                    key={subItem.id}
+                                    id={`nav-${subItem.id}`}
+                                    onClick={() => handleSelect(subItem.id)}
+                                    className={`w-full text-left px-2 py-1.5 rounded-md text-[11px] transition-colors flex items-start gap-1.5 ${
+                                      isSubActive
+                                        ? 'text-emerald-800 bg-emerald-100/60 font-semibold'
+                                        : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
+                                    }`}
+                                  >
+                                    <span className="text-slate-400 select-none">└</span>
+                                    <span className="flex-1 leading-snug">{subItem.title}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-              {openDrugMenu ? (
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              )}
-            </button>
-
-            {openDrugMenu && (
-              <div className="ml-5 pl-3 border-l-2 border-emerald-100 mt-1 space-y-1">
-                <button
-                  id="nav-drugs-all"
-                  onClick={() => handleSelect('drugs_all')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'drugs_all'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.drugList}
-                </button>
-                <button
-                  id="nav-drugs-search"
-                  onClick={() => handleSelect('drugs_search')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'drugs_search'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.searchDrugInfo}
-                </button>
-                <button
-                  id="nav-drugs-usage"
-                  onClick={() => handleSelect('drugs_usage')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'drugs_usage'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.howToUseDrug}
-                </button>
-                <button
-                  id="nav-drugs-warning"
-                  onClick={() => handleSelect('drugs_warning')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'drugs_warning'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.drugWarnings}
-                </button>
-                <button
-                  id="nav-drugs-interactions"
-                  onClick={() => handleSelect('drugs_interactions')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'drugs_interactions'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  └─ {t.drugInteractions}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* ⚠️ การใช้ยาอย่างปลอดภัย (Accordion) */}
-          <div>
-            <button
-              id="menu-toggle-safety"
-              onClick={() => setOpenSafetyMenu(!openSafetyMenu)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
-                <span className="font-semibold text-slate-800">{t.drugSafety}</span>
-              </div>
-              {openSafetyMenu ? (
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              )}
-            </button>
-
-            {openSafetyMenu && (
-              <div className="ml-5 pl-3 border-l-2 border-amber-100 mt-1 space-y-1">
-                <button
-                  id="nav-safe-rdu"
-                  onClick={() => handleSelect('safe_rdu')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'safe_rdu'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.rationalDrugUse}
-                </button>
-                <button
-                  id="nav-safe-allergy"
-                  onClick={() => handleSelect('safe_allergy')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'safe_allergy'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.drugAllergy}
-                </button>
-                <button
-                  id="nav-safe-adr"
-                  onClick={() => handleSelect('safe_adr')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'safe_adr'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  └─ {t.adr}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* 📋 บริการเภสัชกรรม (Accordion) */}
-          <div>
-            <button
-              id="menu-toggle-services"
-              onClick={() => setOpenServiceMenu(!openServiceMenu)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <ClipboardList className="w-5 h-5 text-teal-600" />
-                <span className="font-semibold text-slate-800">{t.pharmacyServices}</span>
-              </div>
-              {openServiceMenu ? (
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              )}
-            </button>
-
-            {openServiceMenu && (
-              <div className="ml-5 pl-3 border-l-2 border-teal-100 mt-1 space-y-1">
-                <button
-                  id="nav-services-opd"
-                  onClick={() => handleSelect('services_opd')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'services_opd'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.opdServices}
-                </button>
-                <button
-                  id="nav-services-ipd"
-                  onClick={() => handleSelect('services_ipd')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'services_ipd'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.ipdServices}
-                </button>
-                <button
-                  id="nav-services-care"
-                  onClick={() => handleSelect('services_care')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'services_care'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  ├─ {t.clinicalServices}
-                </button>
-                <button
-                  id="nav-services-refill"
-                  onClick={() => handleSelect('services_refill')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeSection === 'services_refill'
-                      ? 'text-emerald-700 bg-emerald-50 font-semibold'
-                      : 'text-slate-600 hover:text-emerald-700 hover:bg-slate-50'
-                  }`}
-                >
-                  └─ {t.refillServices}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* 📚 ความรู้เรื่องยา */}
-          <button
-            id="nav-knowledge"
-            onClick={() => handleSelect('knowledge')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
-              activeSection === 'knowledge'
-                ? 'bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-600 shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            <BookOpen className="w-5 h-5 text-indigo-600" />
-            <span>{t.drugKnowledge}</span>
-          </button>
-
-          {/* 📰 ข่าวสารกิจกรรม */}
-          <button
-            id="nav-news"
-            onClick={() => handleSelect('news')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
-              activeSection === 'news'
-                ? 'bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-600 shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            <Newspaper className="w-5 h-5 text-blue-600" />
-            <span>{t.newsAnnouncements}</span>
-          </button>
-
-          {/* 📄 เอกสารดาวน์โหลด */}
-          <button
-            id="nav-documents"
-            onClick={() => handleSelect('documents')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
-              activeSection === 'documents'
-                ? 'bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-600 shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            <FileText className="w-5 h-5 text-emerald-600" />
-            <span>{t.documentsDownloads}</span>
-          </button>
-
-          {/* 📞 ติดต่อเรา */}
-          <button
-            id="nav-contact"
-            onClick={() => handleSelect('contact')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
-              activeSection === 'contact'
-                ? 'bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-600 shadow-xs'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            <PhoneCall className="w-5 h-5 text-amber-600" />
-            <span>{t.contactUs}</span>
-          </button>
+            );
+          })}
         </div>
 
-        {/* 🔐 Footer ปุ่ม Admin ตามคำแนะนำข้อ 9 (ปุ่มเล็กเรียบร้อยด้านล่าง ไม่เกะกะสายตาประชาชน) */}
+        {/* 🔐 Footer ปุ่ม Admin */}
         <div className="p-3 border-t border-slate-200 bg-slate-50/70">
           <div className="text-[11px] text-slate-400 px-2 pb-1.5 flex items-center justify-between">
             <span>สำหรับบุคลากร</span>
@@ -389,4 +286,3 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </>
   );
 };
-
