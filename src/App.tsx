@@ -15,6 +15,7 @@ import {
   StepInfographic,
   BannerConfig,
   PharmacistConsultationItem,
+  QueueItem,
   Language,
 } from './types';
 import {
@@ -61,6 +62,8 @@ import { AdminBannerManager } from './components/admin/AdminBannerManager';
 import { AdminNewsAndKnowledge } from './components/admin/AdminNewsAndKnowledge';
 import { AdminServicesAndDocs } from './components/admin/AdminServicesAndDocs';
 import { AdminConsultationsManager } from './components/admin/AdminConsultationsManager';
+import { AdminQueueManager } from './components/admin/AdminQueueManager';
+import { AdminMenuTopicsManager } from './components/admin/AdminMenuTopicsManager';
 
 export default function App() {
   // Application Mode: 'public' | 'admin_login' | 'admin_dashboard'
@@ -70,27 +73,12 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<PublicNavSection>('home');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Language State: 'th' | 'en' (stored in localStorage)
-  const [language, setLanguage] = useState<Language>(() => {
-    try {
-      const savedLang = localStorage.getItem('vachira_phuket_lang');
-      if (savedLang === 'th' || savedLang === 'en') {
-        return savedLang;
-      }
-    } catch (e) {
-      console.warn('Could not read language from localStorage', e);
-    }
-    return 'th';
-  });
+  // Language State: 'th' (Thai default)
+  const [language, setLanguage] = useState<Language>('th');
 
   // Persist language change
   const handleSelectLanguage = (newLang: Language) => {
     setLanguage(newLang);
-    try {
-      localStorage.setItem('vachira_phuket_lang', newLang);
-    } catch (e) {
-      console.warn('Could not persist language to localStorage', e);
-    }
   };
 
   // Modals
@@ -119,34 +107,37 @@ export default function App() {
   }
 
   const [drugs, setDrugs] = useState<DrugItem[]>(() =>
-    getStoredData('vachira_phuket_drugs', INITIAL_DRUGS)
+    getStoredData('huahin_rx_drugs', INITIAL_DRUGS)
   );
   const [infographics, setInfographics] = useState<StepInfographic[]>(() =>
-    getStoredData('vachira_phuket_infographics', INITIAL_STEP_INFOGRAPHICS)
+    getStoredData('huahin_rx_infographics', INITIAL_STEP_INFOGRAPHICS)
   );
   const [bannerConfig, setBannerConfig] = useState<BannerConfig>(() =>
-    getStoredData('vachira_phuket_banner', INITIAL_BANNER)
+    getStoredData('huahin_rx_banner', INITIAL_BANNER)
   );
   const [news, setNews] = useState<NewsItem[]>(() =>
-    getStoredData('vachira_phuket_news', INITIAL_NEWS)
+    getStoredData('huahin_rx_news', INITIAL_NEWS)
   );
   const [articles, setArticles] = useState<KnowledgeArticle[]>(() =>
-    getStoredData('vachira_phuket_articles', INITIAL_KNOWLEDGE)
+    getStoredData('huahin_rx_articles', INITIAL_KNOWLEDGE)
   );
   const [documents, setDocuments] = useState<DocumentDownload[]>(() =>
-    getStoredData('vachira_phuket_documents', INITIAL_DOCUMENTS)
+    getStoredData('huahin_rx_documents', INITIAL_DOCUMENTS)
   );
   const [users, setUsers] = useState<AdminUser[]>(() =>
-    getStoredData('vachira_phuket_users', INITIAL_USERS)
+    getStoredData('huahin_rx_users', INITIAL_USERS)
   );
   const [consultations, setConsultations] = useState<PharmacistConsultationItem[]>(() =>
-    getStoredData('vachira_phuket_consultations', INITIAL_CONSULTATIONS)
+    getStoredData('huahin_rx_consultations', INITIAL_CONSULTATIONS)
+  );
+  const [queues, setQueues] = useState<QueueItem[]>(() =>
+    getStoredData('huahin_rx_queues', INITIAL_QUEUES)
   );
 
   // Sync state to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_news', JSON.stringify(news));
+      localStorage.setItem('huahin_rx_news', JSON.stringify(news));
     } catch (e) {
       console.warn('Could not persist news to localStorage', e);
     }
@@ -154,7 +145,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_articles', JSON.stringify(articles));
+      localStorage.setItem('huahin_rx_articles', JSON.stringify(articles));
     } catch (e) {
       console.warn('Could not persist articles to localStorage', e);
     }
@@ -162,7 +153,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_drugs', JSON.stringify(drugs));
+      localStorage.setItem('huahin_rx_drugs', JSON.stringify(drugs));
     } catch (e) {
       console.warn('Could not persist drugs to localStorage', e);
     }
@@ -170,7 +161,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_banner', JSON.stringify(bannerConfig));
+      localStorage.setItem('huahin_rx_banner', JSON.stringify(bannerConfig));
     } catch (e) {
       console.warn('Could not persist banner to localStorage', e);
     }
@@ -178,7 +169,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_infographics', JSON.stringify(infographics));
+      localStorage.setItem('huahin_rx_infographics', JSON.stringify(infographics));
     } catch (e) {
       console.warn('Could not persist infographics to localStorage', e);
     }
@@ -186,7 +177,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_documents', JSON.stringify(documents));
+      localStorage.setItem('huahin_rx_documents', JSON.stringify(documents));
     } catch (e) {
       console.warn('Could not persist documents to localStorage', e);
     }
@@ -194,7 +185,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_users', JSON.stringify(users));
+      localStorage.setItem('huahin_rx_users', JSON.stringify(users));
     } catch (e) {
       console.warn('Could not persist users to localStorage', e);
     }
@@ -202,11 +193,19 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('vachira_phuket_consultations', JSON.stringify(consultations));
+      localStorage.setItem('huahin_rx_consultations', JSON.stringify(consultations));
     } catch (e) {
       console.warn('Could not persist consultations to localStorage', e);
     }
   }, [consultations]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('huahin_rx_queues', JSON.stringify(queues));
+    } catch (e) {
+      console.warn('Could not persist queues to localStorage', e);
+    }
+  }, [queues]);
 
   const handleDownloadDocument = (docId: string) => {
     setDocuments((prev) =>
@@ -390,7 +389,16 @@ export default function App() {
             documents={documents}
             users={users}
             consultations={consultations}
+            queues={queues}
             onNavigateSection={(sec) => setAdminSection(sec)}
+          />
+        )}
+
+        {adminSection === 'queues' && (
+          <AdminQueueManager
+            queues={queues}
+            onUpdateQueues={setQueues}
+            onResetQueuesToDefault={() => setQueues(INITIAL_QUEUES)}
           />
         )}
 
@@ -404,6 +412,10 @@ export default function App() {
             onMarkAllAsRead={handleMarkAllConsultationsAsRead}
             onClearAnsweredConsultations={handleClearAnsweredConsultations}
           />
+        )}
+
+        {adminSection === 'menu_topics' && (
+          <AdminMenuTopicsManager />
         )}
 
         {adminSection === 'infographics' && (
@@ -432,7 +444,7 @@ export default function App() {
             onUpdateNews={setNews}
             onUpdateArticles={setArticles}
             onResetNewsToDefault={() => {
-              localStorage.removeItem('vachira_phuket_news');
+              localStorage.removeItem('huahin_rx_news');
               setNews(INITIAL_NEWS);
             }}
           />
@@ -466,7 +478,7 @@ export default function App() {
   }
 
   // =========================================================================
-  // VIEW: PUBLIC PORTAL (โรงพยาบาลวชิระภูเก็ต - กลุ่มงานเภสัชกรรม)
+  // VIEW: PUBLIC PORTAL (โรงพยาบาลหัวหิน - กลุ่มงานเภสัชกรรม)
   // =========================================================================
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased selection:bg-emerald-200 selection:text-emerald-900">
@@ -546,6 +558,7 @@ export default function App() {
             onOpenNewsDetail={(n) => setSelectedNews(n)}
             onDownloadDocument={handleDownloadDocument}
             onOpenConsultModal={() => setIsConsultOpen(true)}
+            onOpenQueueModal={() => setIsQueueOpen(true)}
           />
         )}
       </main>
@@ -567,7 +580,7 @@ export default function App() {
       <QueueCheckModal
         isOpen={isQueueOpen}
         onClose={() => setIsQueueOpen(false)}
-        queues={INITIAL_QUEUES}
+        queues={queues}
       />
 
       <PharmacistConsultModal
