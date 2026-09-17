@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { CONTACT_INFO } from '../data/initialData';
 import { downloadDocumentFile, getFileTypeBadge } from '../utils/fileHelpers';
+import { DynamicSubView } from './DynamicSubView';
 
 interface PublicSubViewsProps {
   section: PublicNavSection;
@@ -42,6 +43,7 @@ interface PublicSubViewsProps {
   onOpenNewsDetail: (item: NewsItem) => void;
   onDownloadDocument?: (docId: string) => void;
   onOpenConsultModal?: () => void;
+  onOpenQueueModal?: () => void;
 }
 
 export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
@@ -56,6 +58,7 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
   onOpenNewsDetail,
   onDownloadDocument,
   onOpenConsultModal,
+  onOpenQueueModal,
 }) => {
   const [filterQuery, setFilterQuery] = useState('');
   const [docSearchQuery, setDocSearchQuery] = useState('');
@@ -453,6 +456,27 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
                   <div className="text-emerald-700 font-semibold">ช่องบริการลำดับความสำคัญพิเศษ</div>
                 </div>
               </div>
+
+              {onOpenQueueModal && (
+                <div className="mt-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div>
+                    <h4 className="font-bold text-emerald-950 text-sm flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-emerald-700" />
+                      <span>ตรวจสอบสถานะคิวรับยาของคุณแบบเรียลไทม์</span>
+                    </h4>
+                    <p className="text-emerald-800 text-[11px] mt-0.5">
+                      เช็กเวลารอโดยประมาณ สถานะการจัดยา และช่องจ่ายยาที่ต้องไปรับ
+                    </p>
+                  </div>
+                  <button
+                    onClick={onOpenQueueModal}
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-xs shrink-0 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>เปิดระบบตรวจสอบคิวรับยา</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -509,31 +533,69 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                  <h4 className="font-bold text-slate-900 text-sm mb-1">❤️ คลินิกวาร์ฟาริน (Warfarin Clinic)</h4>
-                  <p className="text-xs text-slate-600">
-                    ติดตามค่าการแข็งตัวของเลือด (INR) ปรับขนาดยา และแนะนำอาหารที่ควรหลีกเลี่ยง
+                  <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center justify-between">
+                    <span>❤️ คลินิกวาร์ฟาริน (Warfarin Clinic)</span>
+                    <span className="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full font-bold">อาคาร 1 ชั้น 2</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    ตรวจติดตามค่าการแข็งตัวของเลือด (INR) ประเมินภาวะเลือดออกผิดปกติ ปรับขนาดยาร่วมกับแพทย์ และให้ความรู้เรื่องอาหาร/สมุนไพรที่มีผลต่อยา
                   </p>
+                  <div className="mt-2 text-[11px] text-emerald-800 font-medium">เปิดบริการ: ทุกวันอังคารและพฤหัสบดี 08.30 - 12.00 น.</div>
                 </div>
 
                 <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                  <h4 className="font-bold text-slate-900 text-sm mb-1">🫁 คลินิกโรคหืดและปอดอุดกั้นเรื้อรัง</h4>
-                  <p className="text-xs text-slate-600">
-                    สอนและประเมินเทคนิคการสูดยาพ่น เพื่อให้ผู้ป่วยได้รับยาอย่างเต็มที่
+                  <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center justify-between">
+                    <span>🫁 คลินิกโรคหืดและปอดอุดกั้นเรื้อรัง (Asthma & COPD)</span>
+                    <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-bold">ชั้น 2</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    สอนและประเมินเทคนิคการสูดยาพ่น (MDI, Turbuhaler, Accuhaler) ตรวจเช็กปริมาณยาคงเหลือในกระบอกสูบ เพื่อการควบคุมอาการโรคที่แม่นยำ
                   </p>
+                  <div className="mt-2 text-[11px] text-emerald-800 font-medium">เปิดบริการ: ทุกวันพุธ 08.30 - 12.00 น.</div>
                 </div>
 
                 <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                  <h4 className="font-bold text-slate-900 text-sm mb-1">🩺 คลินิกเบาหวานและความดันโลหิตสูง</h4>
-                  <p className="text-xs text-slate-600">
-                    แนะนำการฉีดอินซูลิน การเก็บรักษายา และการป้องกันภาวะน้ำตาลในเลือดต่ำ
+                  <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center justify-between">
+                    <span>🩺 คลินิกเบาหวานและความดันโลหิตสูง (NCDs)</span>
+                    <span className="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full font-bold">ชั้น 1</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    แนะนำเทคนิคการฉีดอินซูลิน การเก็บรักษาปากกาฉีดยา การจัดการภาวะน้ำตาลในเลือดต่ำ (Hypoglycemia) และการกินยาอย่างต่อเนื่อง
                   </p>
+                  <div className="mt-2 text-[11px] text-emerald-800 font-medium">เปิดบริการ: วันจันทร์ - ศุกร์ 08.00 - 15.00 น.</div>
                 </div>
 
                 <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
-                  <h4 className="font-bold text-slate-900 text-sm mb-1">🧬 คลินิกโรคไตเรื้อรัง (CKD Clinic)</h4>
-                  <p className="text-xs text-slate-600">
-                    ปรับขนาดยาให้เหมาะสมกับค่าการทำงานของไต และหลีกเลี่ยงยาที่เป็นพิษต่อไต
+                  <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center justify-between">
+                    <span>🧬 คลินิกโรคไตเรื้อรัง (CKD Clinic)</span>
+                    <span className="text-[10px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold">ชั้น 3</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    ปรับลดขนาดยาให้เหมาะกับอัตราการกรองของไต (eGFR) หลีกเลี่ยงยาแก้ปวดกลุ่ม NSAIDs และยาที่มีความเป็นพิษต่อเนื้อเยื่อไต
                   </p>
+                  <div className="mt-2 text-[11px] text-emerald-800 font-medium">เปิดบริการ: ทุกวันศุกร์ 08.30 - 12.00 น.</div>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center justify-between">
+                    <span>💊 คลินิกยาต้านไวรัส (ARV / HIV Clinic)</span>
+                    <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">คลินิกเฉพาะ</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    บริการให้คำปรึกษาการรับประทานยาต้านไวรัสอย่างตรงเวลา (Adherence) การเฝ้าระวังอาการข้างเคียง และการส่งเสริมคุณภาพชีวิตผู้ติดเชื้อ
+                  </p>
+                  <div className="mt-2 text-[11px] text-emerald-800 font-medium">บริการเป็นส่วนตัวและรักษาความลับของผู้รับบริการ</div>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center justify-between">
+                    <span>🧪 หน่วยผสมยาเคมีบำบัด (Chemotherapy Admixture)</span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">มาตรฐาน Cleanroom</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    เตรียมยาเคมีบำบัดเฉพาะบุคคลสำหรับผู้ป่วยมะเร็งในห้องปลอดเชื้อมาตรฐานสากล พร้อมคำแนะนำการจัดการผลข้างเคียงจากเคมีบำบัด
+                  </p>
+                  <div className="mt-2 text-[11px] text-emerald-800 font-medium">สอบถามข้อมูล: โทร. 076-361234 ต่อ 1238</div>
                 </div>
               </div>
             </div>
@@ -550,32 +612,49 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
               <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2 mb-2">
                 <Package className="w-6 h-6 text-amber-600" />
-                <span>บริการเติมยาและจัดส่งยาทางไปรษณีย์ (Vachira Med Post)</span>
+                <span>บริการเติมยาและจัดส่งยาถึงบ้าน (Health Rider & Med Post)</span>
               </h2>
               <p className="text-xs text-slate-500 mb-6">
-                อำนวยความสะดวกให้ผู้ป่วยโรคเรื้อรังที่อาการคงที่ ไม่ต้องเดินทางมารอรับยาที่โรงพยาบาล
+                โครงการยกระดับบริการ 30 บาทรักษาทุกที่ โรงพยาบาลวชิระภูเก็ต รับยาเดิมต่อเนื่องโดยไม่ต้องรอคิวตรวจ
               </p>
 
               <div className="bg-amber-50/70 p-5 rounded-2xl border border-amber-200 mb-6">
                 <h4 className="font-bold text-amber-950 text-sm mb-2">
-                  คุณสมบัติผู้มีสิทธิใช้บริการ:
+                  คุณสมบัติผู้มีสิทธิใช้บริการเติมยา:
                 </h4>
                 <ul className="text-xs text-amber-900 space-y-1.5 list-disc list-inside">
-                  <li>เป็นผู้ป่วยโรคเรื้อรังที่มีนัดพบแพทย์ต่อเนื่อง และอาการคงที่</li>
-                  <li>แพทย์ประเมินและเห็นชอบให้รับยาทางไปรษณีย์หรือร้านยาใกล้บ้านได้</li>
-                  <li>ไม่ใช่ยาที่ต้องควบคุมอุณหภูมิพิเศษระดับสูง หรือยาเสพติดให้โทษประเภท 2</li>
-                  <li>แจ้งความประสงค์ล่วงหน้าก่อนยาหมด 5-7 วันทำการ</li>
+                  <li>เป็นผู้ป่วยโรคเรื้อรัง (เบาหวาน, ความดันโลหิตสูง, ไขมันในเลือด) ที่มีนัดต่อเนื่อง และอาการคงที่</li>
+                  <li>แพทย์ประเมินและเห็นชอบให้รับยาทางไปรษณีย์, Health Rider หรือร้านยาใกล้บ้านได้</li>
+                  <li>ผลตรวจเลือด/น้ำตาลสะสม/การทำงานของไตอยู่ในเกณฑ์ที่แพทย์กำหนด</li>
+                  <li>ลงทะเบียนล่วงหน้าได้ไม่เกิน 1 วันก่อนถึงวันนัดหมาย</li>
                 </ul>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-800 block mb-1">ช่องทางที่ 1: ส่งพัสดุไปรษณีย์ด่วน (EMS)</span>
-                  จัดส่งถึงหน้าบ้าน มีรหัส Tracking ตรวจสอบสถานะการขนส่งได้ทุกขั้นตอน
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="p-4 bg-teal-50/80 rounded-xl border border-teal-200">
+                  <span className="font-bold text-teal-950 block mb-1">🛵 1. Health Rider วชิระภูเก็ต</span>
+                  <p className="text-slate-600 leading-relaxed">
+                    จัดส่งยาถึงบ้านโดยไรเดอร์สาธารณสุข ในเขตอำเภอเมืองภูเก็ต รวดเร็ว ปลอดภัย ยื่นใบนัดที่ <strong>โต๊ะหมายเลข 41 ชั้น 1</strong>
+                  </p>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-800 block mb-1">ช่องทางที่ 2: รับยาที่ร้านยาคุณภาพใกล้บ้าน</span>
-                  โครงการความร่วมมือกับร้านขายยาในจังหวัดภูเก็ต รับคำปรึกษาจากเภสัชกรชุมชนฟรี
+                  <span className="font-bold text-slate-800 block mb-1">📦 2. ส่งพัสดุด่วน EMS</span>
+                  <p className="text-slate-600 leading-relaxed">
+                    สำหรับผู้ป่วยนอกเขตอำเภอเมือง หรือผู้ป่วยต่างจังหวัด จัดส่งทางไปรษณีย์ด่วนพิเศษ มีเลข Tracking ตรวจสอบสถานะได้
+                  </p>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="font-bold text-slate-800 block mb-1">🏪 3. ร้านยาคุณภาพใกล้บ้าน</span>
+                  <p className="text-slate-600 leading-relaxed">
+                    เลือกรับยาที่ร้านขายยาชุมชนอบอุ่นใกล้บ้านในภูเก็ต พร้อมรับคำปรึกษาและซักประวัติการใช้ยากับเภสัชกรชุมชน
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="font-bold text-slate-900 block">📞 สอบถามสถานะการส่งยา / ลงทะเบียนเติมยา:</span>
+                  <span className="text-slate-600">โทร. 076-361234 ต่อ 1183 หรือ 1184 (กลุ่มงานเภสัชกรรม)</span>
                 </div>
               </div>
             </div>
@@ -1015,7 +1094,7 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
       }
 
       default:
-        return null;
+        return <DynamicSubView sectionId={section} />;
     }
   };
 
