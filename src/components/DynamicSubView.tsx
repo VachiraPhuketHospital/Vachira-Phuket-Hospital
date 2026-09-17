@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   FileText, 
@@ -13,20 +13,35 @@ import {
   CheckCircle,
   ArrowRight
 } from 'lucide-react';
-import { NEW_SIDEBAR_MENU } from '../data/sidebarMenuData';
+import { NEW_SIDEBAR_MENU, getStoredSidebarMenu, SubMenuItem } from '../data/sidebarMenuData';
 
 interface DynamicSubViewProps {
   sectionId: string;
 }
 
 export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => {
-  // Find title & description from NEW_SIDEBAR_MENU
+  const [categories, setCategories] = useState(() => getStoredSidebarMenu());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCategories(getStoredSidebarMenu());
+    };
+    window.addEventListener('huahin_sidebar_menu_changed', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('huahin_sidebar_menu_changed', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  // Find title, description, content, file from categories
   let foundTitle = '';
   let foundCategory = '';
   let foundDesc = '';
   let foundBadge = '';
+  let foundItem: SubMenuItem | null = null;
 
-  for (const cat of NEW_SIDEBAR_MENU) {
+  for (const cat of categories) {
     if (cat.items) {
       const match = cat.items.find(i => i.id === sectionId);
       if (match) {
@@ -34,6 +49,7 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
         foundCategory = cat.title;
         foundDesc = match.description || '';
         foundBadge = match.badge || '';
+        foundItem = match;
         break;
       }
     }
@@ -45,6 +61,7 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
           foundCategory = `${cat.title} ❯ ${grp.title}`;
           foundDesc = match.description || '';
           foundBadge = match.badge || '';
+          foundItem = match;
           break;
         }
       }
@@ -55,6 +72,19 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
     foundTitle = sectionId;
     foundCategory = 'กลุ่มงานเภสัชกรรม';
   }
+
+  const handleDownload = () => {
+    if (foundItem?.fileUrl) {
+      const link = document.createElement('a');
+      link.href = foundItem.fileUrl;
+      link.download = foundItem.fileName || `${foundTitle}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert(`กำลังเปิดดูเอกสาร: ${foundTitle} (ฉบับสมบูรณ์กลุ่มงานเภสัชกรรม)`);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
@@ -90,8 +120,21 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
           </div>
         </div>
 
-        {/* Detailed Sections based on topic */}
-        {sectionId === 'about_vision' && (
+        {/* Custom Article / Content Added by Admin */}
+        {foundItem?.content && (
+          <div className="p-6 rounded-xl bg-slate-50/70 border border-slate-200 space-y-3">
+            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-emerald-600" />
+              รายละเอียดและคำแนะนำ (Content Details)
+            </h3>
+            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line font-sans">
+              {foundItem.content}
+            </div>
+          </div>
+        )}
+
+        {/* Detailed Sections based on default topic */}
+        {sectionId === 'about_vision' && !foundItem?.content && (
           <div className="space-y-6">
             <div className="p-5 rounded-xl bg-emerald-50/70 border border-emerald-200">
               <h3 className="font-bold text-emerald-950 text-lg mb-2 flex items-center gap-2">
@@ -130,7 +173,7 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
           </div>
         )}
 
-        {sectionId.startsWith('struct_') && (
+        {sectionId.startsWith('struct_') && !foundItem?.content && (
           <div className="space-y-4">
             <div className="p-4 rounded-xl bg-teal-50/60 border border-teal-200 text-sm text-teal-950">
               <h4 className="font-bold mb-1">ขอบเขตภาระหน้าที่ความรับผิดชอบ:</h4>
@@ -151,62 +194,58 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
           </div>
         )}
 
-        {/* Generic Resource Card for Drug info / Guidelines / Policies */}
-        {!sectionId.startsWith('about_') && !sectionId.startsWith('struct_') && (
-          <div className="space-y-6">
-            <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-emerald-600" />
-                  <span>เอกสารและแนวทางปฏิบัติฉบับสมบูรณ์ (PDF / Guidelines)</span>
-                </h4>
-                <p className="text-xs text-slate-500">
-                  ไฟล์เอกสารทางการ สำหรับบุคลากรทางการแพทย์ แพทย์ พยาบาล และเภสัชกร
-                </p>
-              </div>
-              <a
-                href="#download"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert(`เปิดดูเอกสาร: ${foundTitle}`);
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>เปิดดู / ดาวน์โหลดเอกสาร</span>
-              </a>
+        {/* Resource Card with Attachment or Download Link */}
+        <div className="space-y-6">
+          <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <FileText className="w-4 h-4 text-emerald-600" />
+                <span>
+                  {foundItem?.fileName ? `เอกสารแนบ: ${foundItem.fileName}` : 'เอกสารและแนวทางปฏิบัติฉบับสมบูรณ์ (PDF / Guidelines)'}
+                </span>
+              </h4>
+              <p className="text-xs text-slate-500">
+                ไฟล์เอกสารทางการ สำหรับบุคลากรทางการแพทย์ แพทย์ พยาบาล และเภสัชกร
+              </p>
             </div>
+            <button
+              onClick={handleDownload}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{foundItem?.fileName ? `ดาวน์โหลด (${foundItem.fileName})` : 'เปิดดู / ดาวน์โหลดเอกสาร'}</span>
+            </button>
+          </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-              <div className="bg-slate-100 px-4 py-2.5 font-bold text-slate-700 border-b border-slate-200">
-                หัวข้อสำคัญในเอกสารนี้
+          <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <div className="bg-slate-100 px-4 py-2.5 font-bold text-slate-700 border-b border-slate-200">
+              หัวข้อสำคัญและเกณฑ์การดำเนินงาน
+            </div>
+            <div className="divide-y divide-slate-100 bg-white">
+              <div className="p-3 flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-slate-800">วัตถุประสงค์และขอบเขต:</span>
+                  <p className="text-slate-500 mt-0.5">กำหนดแนวทางการปฏิบัติงานและระเบียบปฏิบัติเพื่อความปลอดภัยสูงสุดของผู้ป่วย</p>
+                </div>
               </div>
-              <div className="divide-y divide-slate-100 bg-white">
-                <div className="p-3 flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-slate-800">วัตถุประสงค์และขอบเขต:</span>
-                    <p className="text-slate-500 mt-0.5">กำหนดแนวทางการปฏิบัติงานและระเบียบปฏิบัติเพื่อความปลอดภัยสูงสุดของผู้ป่วย</p>
-                  </div>
+              <div className="p-3 flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-slate-800">เกณฑ์การพิจารณาและการติดตาม:</span>
+                  <p className="text-slate-500 mt-0.5">การประเมินความปลอดภัย ข้อห้ามใช้ และข้อควรระวังสำคัญ</p>
                 </div>
-                <div className="p-3 flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-slate-800">เกณฑ์การพิจารณาและการติดตาม:</span>
-                    <p className="text-slate-500 mt-0.5">การประเมินความปลอดภัย ข้อห้ามใช้ และข้อควรระวังสำคัญ</p>
-                  </div>
-                </div>
-                <div className="p-3 flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-slate-800">ขั้นตอนการรายงานและประสานงาน:</span>
-                    <p className="text-slate-500 mt-0.5">การส่งต่อข้อมูลระหว่างทีมสหสาขาวิชาชีพและระบบสารสนเทศโรงพยาบาล</p>
-                  </div>
+              </div>
+              <div className="p-3 flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold text-slate-800">ขั้นตอนการรายงานและประสานงาน:</span>
+                  <p className="text-slate-500 mt-0.5">การส่งต่อข้อมูลระหว่างทีมสหสาขาวิชาชีพและระบบสารสนเทศโรงพยาบาล</p>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Contact Footer Note */}
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
