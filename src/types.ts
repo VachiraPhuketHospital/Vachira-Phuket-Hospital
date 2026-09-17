@@ -133,6 +133,7 @@ export type AdminSection =
   | 'dashboard'
   | 'queues'
   | 'consultations'
+  | 'menu_topics'
   | 'drugs'
   | 'services'
   | 'knowledge'
@@ -145,4 +146,3 @@ export type AdminSection =
   | 'settings';
 
 export type Language = 'th' | 'en';
-
