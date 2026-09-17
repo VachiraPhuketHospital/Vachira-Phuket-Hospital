@@ -7,6 +7,7 @@ import {
   Settings,
   Plus,
   Trash2,
+  Edit2,
   Check,
   Download,
   ShieldCheck,
@@ -45,11 +46,12 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
 
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<AdminUser | null>(null);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [hiddenMenus, setHiddenMenus] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('vachira_admin_hidden_menus');
+      const saved = localStorage.getItem('huahin_admin_hidden_menus');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -74,8 +76,8 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
     }
     setHiddenMenus(updated);
     try {
-      localStorage.setItem('vachira_admin_hidden_menus', JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent('vachira_admin_menus_changed', { detail: updated }));
+      localStorage.setItem('huahin_admin_hidden_menus', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('huahin_admin_menus_changed', { detail: updated }));
     } catch (e) {
       console.error(e);
     }
@@ -84,8 +86,8 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
   const handleResetMenus = () => {
     setHiddenMenus([]);
     try {
-      localStorage.removeItem('vachira_admin_hidden_menus');
-      window.dispatchEvent(new CustomEvent('vachira_admin_menus_changed', { detail: [] }));
+      localStorage.removeItem('huahin_admin_hidden_menus');
+      window.dispatchEvent(new CustomEvent('huahin_admin_menus_changed', { detail: [] }));
     } catch (e) {
       console.error(e);
     }
@@ -101,8 +103,8 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
       name: newUserName.trim(),
       username: newUserUsername.trim(),
       role: newUserRole,
-      department: 'กลุ่มงานเภสัชกรรม รพ.วชิระภูเก็ต',
-      email: `${newUserUsername.trim()}@vachiraphuket.go.th`,
+      department: 'กลุ่มงานเภสัชกรรม รพ.หัวหิน',
+      email: `${newUserUsername.trim()}@huahinhospital.go.th`,
       lastLogin: 'เพิ่งสร้าง',
     };
     const updated = [newUser, ...userList];
@@ -115,6 +117,20 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
 
   const handleDeleteUser = (user: AdminUser) => {
     setDeleteConfirmUser(user);
+  };
+
+  const handleOpenEditUser = (user: AdminUser) => {
+    setEditingUser({ ...user });
+  };
+
+  const handleSaveEditUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    const updated = userList.map((u) => (u.id === editingUser.id ? editingUser : u));
+    setUserList(updated);
+    onUpdateUsers(updated);
+    showToast(`แก้ไขข้อมูลผู้ใช้ "${editingUser.name}" เรียบร้อย`);
+    setEditingUser(null);
   };
 
   const handleConfirmDeleteUser = () => {
@@ -225,15 +241,24 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
                   <td className="py-3 px-4 text-slate-500">{u.email}</td>
                   <td className="py-3 px-4 text-slate-400">{u.lastLogin}</td>
                   <td className="py-3 px-4 text-center">
-                    {u.username !== 'admin' && (
+                    <div className="flex items-center justify-center gap-1">
                       <button
-                        onClick={() => handleDeleteUser(u)}
-                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                        title="ลบผู้ใช้นี้"
+                        onClick={() => handleOpenEditUser(u)}
+                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                        title="แก้ไขข้อมูลผู้ใช้"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Edit2 className="w-3.5 h-3.5" />
                       </button>
-                    )}
+                      {u.username !== 'admin' && (
+                        <button
+                          onClick={() => handleDeleteUser(u)}
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          title="ลบผู้ใช้นี้"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -295,6 +320,108 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
                   <span>ยืนยันลบผู้ใช้นี้</span>
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit User Modal */}
+        {editingUser && (
+          <div
+            className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4"
+            onClick={() => setEditingUser(null)}
+          >
+            <div
+              className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <Edit2 className="w-4 h-4 text-blue-600" />
+                  <span>แก้ไขข้อมูลผู้ใช้งาน</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveEditUser} className="space-y-3 text-xs">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">ชื่อ - สกุล</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingUser.name}
+                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-xl border-slate-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Username</label>
+                  <input
+                    type="text"
+                    required
+                    disabled={editingUser.username === 'admin'}
+                    value={editingUser.username}
+                    onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
+                    className={`w-full px-3 py-2 border rounded-xl border-slate-300 ${
+                      editingUser.username === 'admin' ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">ตำแหน่ง / สิทธิ์</label>
+                  <select
+                    value={editingUser.role}
+                    disabled={editingUser.username === 'admin'}
+                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as any })}
+                    className="w-full px-3 py-2 border rounded-xl border-slate-300 bg-white"
+                  >
+                    <option value="pharmacist">เภสัชกร (Pharmacist)</option>
+                    <option value="admin">ผู้ดูแลระบบ (Admin)</option>
+                    <option value="staff">เจ้าหน้าที่สนับสนุน (Staff)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">กลุ่มงาน / แผนก</label>
+                  <input
+                    type="text"
+                    value={editingUser.department || ''}
+                    onChange={(e) => setEditingUser({ ...editingUser, department: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-xl border-slate-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={editingUser.email}
+                    onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-xl border-slate-300"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setEditingUser(null)}
+                    className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>บันทึกการแก้ไข</span>
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
@@ -389,7 +516,7 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
             <label className="block font-bold text-slate-700 mb-1">โทรศัพท์สายตรงห้องยา</label>
             <input
               type="text"
-              defaultValue="076-361234 ต่อ 1234"
+              defaultValue="032-523000 ต่อ 1121"
               className="w-full px-3 py-2 border rounded-xl border-slate-300"
             />
           </div>
@@ -443,7 +570,9 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             { id: 'dashboard', label: 'Dashboard ภาพรวม', icon: '📊', desc: 'หน้าสรุปภาพรวมและสถิติหลัก' },
+            { id: 'queues', label: 'จัดการคิวรับยาผู้ป่วยนอก', icon: '⏱️', desc: 'ออกคิวใหม่ อัปเดตสถานะ เรียกคิว และจัดลำดับ' },
             { id: 'consultations', label: 'ข้อความปรึกษาเภสัชกร', icon: '💬', desc: 'การจัดการแชทและติดต่อกลับผู้ป่วย' },
+            { id: 'menu_topics', label: '📁 จัดการหัวข้อเมนู/เนื้อหา', icon: '📂', desc: 'เพิ่ม ลบ แก้ไขหัวข้อย่อยและเอกสารใน Sidebar' },
             { id: 'drugs', label: 'จัดการข้อมูลยา', icon: '💊', desc: 'ค้นหา เพิ่ม แก้ไข และลบรายการยา' },
             { id: 'infographics', label: 'จัดการขั้นตอนรับยา (3 รูป)', icon: '🖼️', desc: 'ภาพ Infographic แสดงขั้นตอนบริการ' },
             { id: 'banner', label: 'จัดการ Banner หน้าแรก', icon: '🎛️', desc: 'แบนเนอร์ประชาสัมพันธ์หน้าหลัก' },
