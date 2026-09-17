@@ -126,7 +126,8 @@ export type PublicNavSection =
   | 'knowledge'
   | 'news'
   | 'documents'
-  | 'contact';
+  | 'contact'
+  | (string & {});
 
 export type AdminSection =
   | 'dashboard'
@@ -144,6 +145,4 @@ export type AdminSection =
   | 'settings';
 
 export type Language = 'th' | 'en';
-
-export type { BackgroundConfig } from './types/background';
 
