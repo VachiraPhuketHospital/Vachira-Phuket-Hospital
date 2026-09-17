@@ -39,7 +39,7 @@ export const getStoredSidebarMenu = (): NavMenuCategory[] => {
 export const saveSidebarMenu = (menu: NavMenuCategory[]) => {
   try {
     localStorage.setItem(STORAGE_KEY_SIDEBAR_MENU, JSON.stringify(menu));
-    window.dispatchEvent(new CustomEvent('vachira_sidebar_menu_changed', { detail: menu }));
+    window.dispatchEvent(new CustomEvent('huahin_sidebar_menu_changed', { detail: menu }));
   } catch (err) {
     console.error('Failed to save sidebar menu to localStorage:', err);
   }
