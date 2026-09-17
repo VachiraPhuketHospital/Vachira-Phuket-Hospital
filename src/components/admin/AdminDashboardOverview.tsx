@@ -15,7 +15,7 @@ import {
   Bell,
   AlertCircle
 } from 'lucide-react';
-import { DrugItem, NewsItem, KnowledgeArticle, DocumentDownload, AdminUser, PharmacistConsultationItem } from '../../types';
+import { DrugItem, NewsItem, KnowledgeArticle, DocumentDownload, AdminUser, PharmacistConsultationItem, QueueItem } from '../../types';
 
 interface AdminDashboardOverviewProps {
   drugs: DrugItem[];
@@ -24,6 +24,7 @@ interface AdminDashboardOverviewProps {
   documents: DocumentDownload[];
   users: AdminUser[];
   consultations?: PharmacistConsultationItem[];
+  queues?: QueueItem[];
   onNavigateSection: (sec: any) => void;
 }
 
@@ -34,13 +35,26 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
   documents,
   users,
   consultations = [],
+  queues = [],
   onNavigateSection,
 }) => {
   const pendingConsults = consultations.filter((c) => c.status === 'pending');
   const recentConsults = consultations.slice(0, 4);
+  const activeQueues = queues.filter((q) => q.status !== 'completed');
 
-  // Stat values matching prompt #11 + consultations card
+  // Stat values matching prompt #11 + consultations card + queue management
   const stats = [
+    {
+      id: 'stat-queues',
+      label: 'คิวรับยาผู้ป่วยนอก',
+      count: `${activeQueues.length} คิวค้าง`,
+      realCount: queues.length,
+      icon: '⏱️',
+      bg: 'bg-emerald-50 text-emerald-800 border-emerald-300 ring-2 ring-emerald-200',
+      action: () => onNavigateSection('queues'),
+      subtext: `${queues.filter((q) => q.status === 'ready').length} คิวพร้อมเรียกรับยา`,
+      highlight: true,
+    },
     {
       id: 'stat-consults',
       label: 'ปรึกษาเภสัชกร',
@@ -112,7 +126,7 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
       <div className="bg-gradient-to-r from-emerald-800 to-teal-900 rounded-2xl p-6 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
-            ระบบจัดการสารสนเทศกลุ่มงานเภสัชกรรม รพ.วชิระภูเก็ต
+            ระบบจัดการสารสนเทศกลุ่มงานเภสัชกรรม รพ.หัวหิน
           </span>
           <h1 className="text-2xl font-black mt-1">ภาพรวมระบบ (Dashboard Overview)</h1>
           <p className="text-xs text-emerald-100 mt-1 font-light">
@@ -128,8 +142,14 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
             <span>กล่องข้อความ ({pendingConsults.length})</span>
           </button>
           <button
+            onClick={() => onNavigateSection('menu_topics')}
+            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs shadow-xs transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <span>📁 จัดการหัวข้อเมนู/เนื้อหา</span>
+          </button>
+          <button
             onClick={() => onNavigateSection('drugs')}
-            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs shadow-xs transition-colors shrink-0"
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs shadow-xs transition-colors shrink-0"
           >
             + เพิ่มข้อมูลยาใหม่
           </button>
@@ -187,7 +207,7 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
                 )}
               </h3>
               <p className="text-[11px] text-slate-500">
-                รายการคำถามเรื่องยาจากคนไข้ รพ.วชิระภูเก็ต ที่ติดต่อผ่านระบบ
+                รายการคำถามเรื่องยาจากคนไข้ รพ.หัวหิน ที่ติดต่อผ่านระบบ
               </p>
             </div>
           </div>
@@ -301,7 +321,7 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
 
             <div>
               <div className="flex justify-between font-semibold text-slate-700 mb-1">
-                <span>บริการเติมยาทางไปรษณีย์ (Vachira Med Post)</span>
+                <span>บริการเติมยาทางไปรษณีย์ (Hua Hin Med Post)</span>
                 <span>45 กล่องพัสดุจัดส่งแล้ว</span>
               </div>
               <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
