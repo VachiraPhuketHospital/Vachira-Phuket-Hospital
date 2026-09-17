@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Home,
   Building2,
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { PublicNavSection, Language } from '../types';
 import { TRANSLATIONS } from '../data/translations';
-import { NEW_SIDEBAR_MENU } from '../data/sidebarMenuData';
+import { NEW_SIDEBAR_MENU, getStoredSidebarMenu, NavMenuCategory } from '../data/sidebarMenuData';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -35,6 +35,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   language = 'th',
 }) => {
   const t = TRANSLATIONS[language];
+  const [categories, setCategories] = useState<NavMenuCategory[]>(() => getStoredSidebarMenu());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCategories(getStoredSidebarMenu());
+    };
+    window.addEventListener('huahin_sidebar_menu_changed', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('huahin_sidebar_menu_changed', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   // Map category icons
   const getCategoryIcon = (iconName: string) => {
@@ -117,12 +130,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Sidebar Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-emerald-800 to-teal-800 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center p-1.5 shadow-inner overflow-hidden">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/th/1/12/Logo_of_Vachira_Phuket_Hospital.jpg"
-                alt="Logo of Hospital"
-                className="w-full h-full object-contain rounded-lg"
-              />
+            <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center p-1.5 shadow-inner text-white">
+              <Pill className="w-6 h-6" />
             </div>
             <div>
               <h2 className="font-bold text-sm tracking-tight leading-tight">
@@ -159,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
 
           {/* New Dynamic Menu Sections */}
-          {NEW_SIDEBAR_MENU.map((category) => {
+          {categories.map((category) => {
             const isCatExpanded = !!expandedCategories[category.id];
 
             return (
