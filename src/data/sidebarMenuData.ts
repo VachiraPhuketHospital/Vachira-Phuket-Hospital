@@ -6,6 +6,7 @@ export interface SubMenuItem {
   content?: string;
   fileUrl?: string;
   fileName?: string;
+  imageUrl?: string;
 }
 
 export interface NestedSubGroup {
@@ -39,7 +40,7 @@ export const getStoredSidebarMenu = (): NavMenuCategory[] => {
 export const saveSidebarMenu = (menu: NavMenuCategory[]) => {
   try {
     localStorage.setItem(STORAGE_KEY_SIDEBAR_MENU, JSON.stringify(menu));
-    window.dispatchEvent(new CustomEvent('huahin_sidebar_menu_changed', { detail: menu }));
+    window.dispatchEvent(new CustomEvent('vachira_sidebar_menu_changed', { detail: menu }));
   } catch (err) {
     console.error('Failed to save sidebar menu to localStorage:', err);
   }
@@ -75,7 +76,8 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
         id: 'struct_opd',
         title: 'งานบริการผู้ป่วยนอก',
         description: 'การให้บริการจ่ายยาผู้ป่วยนอก ตรวจสอบความถูกต้องและให้คำแนะนำการใช้ยา',
-        content: 'รับผิดชอบงานคัดกรองใบสั่งยา ตรวจสอบอันตรกิริยา จัดและจ่ายยาผู้ป่วยนอก ให้คำปรึกษาการใช้ยาเฉพาะโรค และระบบคิวอัจฉริยะ'
+        content: 'รับผิดชอบงานคัดกรองใบสั่งยา ตรวจสอบอันตรกิริยา จัดและจ่ายยาผู้ป่วยนอก ให้คำปรึกษาการใช้ยาเฉพาะโรค และระบบคิวอัจฉริยะ',
+        imageUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80'
       },
       {
         id: 'struct_ipd',
@@ -128,14 +130,14 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
     items: [
       {
         id: 'di_hospital_list',
-        title: 'บัญชียาโรงพยาบาลวชิระภูเก็ต',
-        badge: 'รพ.วชิระภูเก็ต',
+        title: 'บัญชียาโรงพยาบาลหัวหิน',
+        badge: 'รพ.หัวหิน',
         description: 'รายการยาที่ได้รับการบรรจุในบัญชียาโรงพยาบาลหัวหิน ฉบับปรับปรุงล่าสุด',
         content: 'รายการยาทั้งหมดที่ผ่านการอนุมัติจากคณะกรรมการเภสัชกรรมและการบำบัด (PTC) โรงพยาบาลหัวหิน พร้อมข้อบ่งใช้ ขนาดยา และเงื่อนไขการสั่งใช้'
       },
       {
         id: 'di_tmt',
-        title: 'รหัส TMT ยาโรงพยาบาลวชิระภูเก็ต',
+        title: 'รหัส TMT ยาโรงพยาบาลหัวหิน',
         badge: 'TMT Code',
         description: 'รหัสยามาตรฐานไทย (Thai Medicines Terminology) ประจำโรงพยาบาลหัวหิน',
         content: 'รหัส TMT GPU/TPU สำหรับเชื่อมโยงระบบเบิกจ่าย สปสช., กรมบัญชีกลาง และสำนักงานประกันสังคม'
@@ -166,7 +168,7 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
         title: 'บัญชียานอกบัญชียาหลักแห่งชาติ (NED)',
         badge: 'NED',
         description: 'รายการยานอกบัญชียาหลักแห่งชาติและแนวทางขออนุมัติสั่งใช้',
-        content: 'เกณฑ์และขั้นตอนการสั่งใช้ยานอกบัญชียาหลักแห่งชาติ (Non-Essential Drugs) ในโรงพยาบาลวชิระภูเก็ต'
+        content: 'เกณฑ์และขั้นตอนการสั่งใช้ยานอกบัญชียาหลักแห่งชาติ (Non-Essential Drugs) ในโรงพยาบาลหัวหิน'
       },
       {
         id: 'di_ned_free',
@@ -452,7 +454,7 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
     items: [
       {
         id: 'news_journal',
-        title: 'วารสารเภสัชกรรมโรงพยาบาลวชิระภูเก็ต',
+        title: 'วารสารเภสัชกรรมโรงพยาบาล',
         description: 'วารสารข่าวสารและสาระน่ารู้ทางเภสัชกรรมประจำงวด',
         content: 'รวบรวมบทความวิชาการ ข่าวสารเตือนภัยด้านยา และข่าวสารความเคลื่อนไหวของกลุ่มงานเภสัชกรรม'
       },
