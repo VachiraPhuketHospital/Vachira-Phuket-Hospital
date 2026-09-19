@@ -11,7 +11,8 @@ import {
   Calendar,
   Users,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  Image as ImageIcon
 } from 'lucide-react';
 import { NEW_SIDEBAR_MENU, getStoredSidebarMenu, SubMenuItem } from '../data/sidebarMenuData';
 
@@ -26,10 +27,10 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
     const handleUpdate = () => {
       setCategories(getStoredSidebarMenu());
     };
-    window.addEventListener('huahin_sidebar_menu_changed', handleUpdate);
+    window.addEventListener('vachira_sidebar_menu_changed', handleUpdate);
     window.addEventListener('storage', handleUpdate);
     return () => {
-      window.removeEventListener('huahin_sidebar_menu_changed', handleUpdate);
+      window.removeEventListener('vachira_sidebar_menu_changed', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
     };
   }, []);
@@ -71,6 +72,19 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
   if (!foundTitle) {
     foundTitle = sectionId;
     foundCategory = 'กลุ่มงานเภสัชกรรม';
+  }
+
+  // Fallback to initial preset if item in storage doesn't have imageUrl yet
+  let effectiveImageUrl = foundItem?.imageUrl;
+  if (!effectiveImageUrl) {
+    for (const cat of NEW_SIDEBAR_MENU) {
+      const match = cat.items?.find(i => i.id === sectionId) || 
+        cat.groups?.flatMap(g => g.items).find(i => i.id === sectionId);
+      if (match?.imageUrl) {
+        effectiveImageUrl = match.imageUrl;
+        break;
+      }
+    }
   }
 
   const handleDownload = () => {
@@ -119,6 +133,26 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
             ปรับปรุงล่าสุด: พ.ศ. 2568
           </div>
         </div>
+
+        {/* Featured Image if uploaded/provided by Admin */}
+        {effectiveImageUrl && (
+          <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-2xs group">
+            <div className="relative aspect-16/9 sm:aspect-21/9 max-h-84 w-full overflow-hidden bg-slate-100">
+              <img
+                src={effectiveImageUrl}
+                alt={foundTitle}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-101"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-slate-950/75 via-slate-900/15 to-transparent flex items-end justify-between p-4 sm:p-5">
+                <span className="text-white text-xs font-semibold bg-slate-900/70 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>ภาพประกอบ: {foundTitle}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Custom Article / Content Added by Admin */}
         {foundItem?.content && (
