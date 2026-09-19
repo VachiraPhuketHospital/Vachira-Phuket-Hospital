@@ -348,6 +348,7 @@ export const INITIAL_USERS: AdminUser[] = [
     department: 'กลุ่มงานเภสัชกรรม รพ.วชิระภูเก็ต',
     email: 'damrongkiat.s@vachiraphuket.go.th',
     lastLogin: 'วันนี้, 10:30 น.',
+    password: 'vachira123',
   },
   {
     id: 'u2',
@@ -357,6 +358,7 @@ export const INITIAL_USERS: AdminUser[] = [
     department: 'งานบริบาลเภสัชกรรมผู้ป่วยนอก',
     email: 'jantima.s@vachiraphuket.go.th',
     lastLogin: 'เมื่อวานนี้, 16:45 น.',
+    password: 'pharma123',
   },
   {
     id: 'u3',
@@ -366,6 +368,7 @@ export const INITIAL_USERS: AdminUser[] = [
     department: 'งานคลังเวชภัณฑ์และข้อมูลยา',
     email: 'kittisak.p@vachiraphuket.go.th',
     lastLogin: '3 วันที่แล้ว',
+    password: 'staff123',
   }
 ];
 
@@ -374,10 +377,11 @@ export const CONTACT_INFO = {
   hospital: 'โรงพยาบาลวชิระภูเก็ต (Vachira Phuket Hospital)',
   address: 'เลขที่ 44 ถนนเยาวราช ตำบลตลาดใหญ่ อำเภอเมือง จังหวัดภูเก็ต 83000',
   phones: [
-    { label: 'ห้องจ่ายยาผู้ป่วยนอก ชั้น 1', number: '076-361234 ต่อ 1234, 1235' },
-    { label: 'คลินิกให้คำปรึกษาด้านยา', number: '076-361234 ต่อ 1238' },
-    { label: 'บริการส่งยาทางไปรษณีย์', number: '076-361234 ต่อ 1240' },
-    { label: 'สายด่วนสอบถามเรื่องยา', number: '076-361244 (สายตรง)' }
+    { label: 'ห้องจ่ายยาผู้ป่วยนอก ชั้น 1 (OPD)', number: '076-361234 ต่อ 1183, 1184' },
+    { label: 'โครงการเติมยา & Health Rider (ส่งยาถึงบ้าน โต๊ะ 41)', number: '076-361234 ต่อ 1183' },
+    { label: 'คลินิกบริบาลเภสัชกรรมเฉพาะโรค (วาร์ฟาริน/หอบหืด/ไต)', number: '076-361234 ต่อ 1238' },
+    { label: 'ห้องจ่ายยาอุบัติเหตุและฉุกเฉิน (ER 24 ชม.)', number: '076-361234 ต่อ 1180' },
+    { label: 'สายด่วนกลุ่มงานเภสัชกรรม', number: '076-361234' }
   ],
   email: 'pharmacy@vachiraphuket.go.th',
   line: '@vachirapharmacy',
