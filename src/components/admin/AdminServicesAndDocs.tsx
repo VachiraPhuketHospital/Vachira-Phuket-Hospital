@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DocumentDownload, AdminUser, AdminSection } from '../../types';
 import {
   FileText,
@@ -7,7 +7,6 @@ import {
   Settings,
   Plus,
   Trash2,
-  Edit2,
   Check,
   Download,
   ShieldCheck,
@@ -19,6 +18,9 @@ import {
   EyeOff,
   Sliders,
   RotateCcw,
+  KeyRound,
+  Key,
+  Pencil,
 } from 'lucide-react';
 import { CONTACT_INFO } from '../../data/initialData';
 import { AdminDocumentManager } from './AdminDocumentManager';
@@ -43,15 +45,22 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
   const [newUserName, setNewUserName] = useState('');
   const [newUserRole, setNewUserRole] = useState<'admin' | 'pharmacist' | 'staff'>('pharmacist');
   const [newUserUsername, setNewUserUsername] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('1234');
+  const [editingPasswordUser, setEditingPasswordUser] = useState<AdminUser | null>(null);
+  const [editingPasswordVal, setEditingPasswordVal] = useState('');
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setUserList(users);
+  }, [users]);
 
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<AdminUser | null>(null);
-  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [hiddenMenus, setHiddenMenus] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('huahin_admin_hidden_menus');
+      const saved = localStorage.getItem('vachira_admin_hidden_menus');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -76,8 +85,8 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
     }
     setHiddenMenus(updated);
     try {
-      localStorage.setItem('huahin_admin_hidden_menus', JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent('huahin_admin_menus_changed', { detail: updated }));
+      localStorage.setItem('vachira_admin_hidden_menus', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('vachira_admin_menus_changed', { detail: updated }));
     } catch (e) {
       console.error(e);
     }
@@ -86,8 +95,8 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
   const handleResetMenus = () => {
     setHiddenMenus([]);
     try {
-      localStorage.removeItem('huahin_admin_hidden_menus');
-      window.dispatchEvent(new CustomEvent('huahin_admin_menus_changed', { detail: [] }));
+      localStorage.removeItem('vachira_admin_hidden_menus');
+      window.dispatchEvent(new CustomEvent('vachira_admin_menus_changed', { detail: [] }));
     } catch (e) {
       console.error(e);
     }
@@ -98,39 +107,54 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newUserName.trim() || !newUserUsername.trim()) return;
+    const pwd = newUserPassword.trim() || '1234';
     const newUser: AdminUser = {
       id: `u_${Date.now()}`,
       name: newUserName.trim(),
       username: newUserUsername.trim(),
       role: newUserRole,
-      department: 'กลุ่มงานเภสัชกรรม รพ.หัวหิน',
-      email: `${newUserUsername.trim()}@huahinhospital.go.th`,
+      department: 'กลุ่มงานเภสัชกรรม รพ.วชิระภูเก็ต',
+      email: `${newUserUsername.trim()}@vachiraphuket.go.th`,
       lastLogin: 'เพิ่งสร้าง',
+      password: pwd,
     };
     const updated = [newUser, ...userList];
     setUserList(updated);
     onUpdateUsers(updated);
     setNewUserName('');
     setNewUserUsername('');
-    showToast(`เพิ่มผู้ใช้ "${newUser.name}" เรียบร้อยแล้ว`);
+    setNewUserPassword('1234');
+    showToast(`เพิ่มผู้ใช้ "${newUser.name}" (รหัสผ่าน: ${pwd}) เรียบร้อยแล้ว`);
+  };
+
+  const handleOpenEditPassword = (user: AdminUser) => {
+    setEditingPasswordUser(user);
+    setEditingPasswordVal(user.password || (user.username === 'admin' ? 'vachira123' : '1234'));
+  };
+
+  const handleSaveNewPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPasswordUser || !editingPasswordVal.trim()) return;
+    const newPass = editingPasswordVal.trim();
+    const updated = userList.map((u) =>
+      u.id === editingPasswordUser.id ? { ...u, password: newPass } : u
+    );
+    setUserList(updated);
+    onUpdateUsers(updated);
+    showToast(`เปลี่ยนรหัสผ่านของ "${editingPasswordUser.name}" เป็น "${newPass}" สำเร็จ`);
+    setEditingPasswordUser(null);
+    setEditingPasswordVal('');
+  };
+
+  const togglePasswordVisibility = (userId: string) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [userId]: !prev[userId],
+    }));
   };
 
   const handleDeleteUser = (user: AdminUser) => {
     setDeleteConfirmUser(user);
-  };
-
-  const handleOpenEditUser = (user: AdminUser) => {
-    setEditingUser({ ...user });
-  };
-
-  const handleSaveEditUser = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingUser) return;
-    const updated = userList.map((u) => (u.id === editingUser.id ? editingUser : u));
-    setUserList(updated);
-    onUpdateUsers(updated);
-    showToast(`แก้ไขข้อมูลผู้ใช้ "${editingUser.name}" เรียบร้อย`);
-    setEditingUser(null);
   };
 
   const handleConfirmDeleteUser = () => {
@@ -169,43 +193,63 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
 
         {/* Add User */}
         <form onSubmit={handleAddUser} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs text-xs space-y-3">
-          <div className="font-bold text-slate-800">เพิ่มผู้ใช้ใหม่ในระบบ:</div>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div className="font-bold text-slate-800 flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Plus className="w-4 h-4 text-purple-600" />
+              <span>เพิ่มผู้ใช้ใหม่ในระบบ (เชื่อมโยงกับระบบล็อกอิน):</span>
+            </span>
+            <span className="text-[11px] text-slate-400 font-normal">รหัสผ่านนี้จะใช้ล็อกอินเข้าสู่ระบบจริง</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
             <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1">ชื่อ - สกุล</label>
               <input
                 type="text"
-                placeholder="ชื่อ-สกุล (เช่น ภก.สมชาย)"
+                placeholder="เช่น ภก.สมชาย นามสมมุติ"
                 required
                 value={newUserName}
                 onChange={(e) => setNewUserName(e.target.value)}
-                className="w-full px-3 py-2 border rounded-xl border-slate-300"
+                className="w-full px-3 py-2 border rounded-xl border-slate-300 focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
               />
             </div>
             <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1">Username</label>
               <input
                 type="text"
-                placeholder="Username (เช่น somchai.s)"
+                placeholder="เช่น somchai.s"
                 required
                 value={newUserUsername}
                 onChange={(e) => setNewUserUsername(e.target.value)}
-                className="w-full px-3 py-2 border rounded-xl border-slate-300"
+                className="w-full px-3 py-2 border rounded-xl border-slate-300 focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
               />
             </div>
             <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1">รหัสผ่าน (Password)</label>
+              <input
+                type="text"
+                placeholder="รหัสผ่านเข้าใช้งาน"
+                required
+                value={newUserPassword}
+                onChange={(e) => setNewUserPassword(e.target.value)}
+                className="w-full px-3 py-2 border rounded-xl border-slate-300 focus:ring-2 focus:ring-purple-500 focus:outline-hidden font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1">ตำแหน่ง / สิทธิ์</label>
               <select
                 value={newUserRole}
                 onChange={(e) => setNewUserRole(e.target.value as any)}
-                className="w-full px-3 py-2 border rounded-xl border-slate-300 bg-white"
+                className="w-full px-3 py-2 border rounded-xl border-slate-300 bg-white focus:ring-2 focus:ring-purple-500 focus:outline-hidden"
               >
                 <option value="pharmacist">เภสัชกร (Pharmacist)</option>
                 <option value="admin">ผู้ดูแลระบบ (Admin)</option>
                 <option value="staff">เจ้าหน้าที่สนับสนุน (Staff)</option>
               </select>
             </div>
-            <div>
+            <div className="flex items-end">
               <button
                 type="submit"
-                className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-xs"
+                className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-xs transition-colors cursor-pointer"
               >
                 + เพิ่มผู้ใช้
               </button>
@@ -215,11 +259,20 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
 
         {/* Users Table */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="p-4 bg-slate-50/70 border-b border-slate-200 flex items-center justify-between text-xs">
+            <span className="font-bold text-slate-800">
+              รายชื่อผู้ใช้ที่สามารถล็อกอินเข้าสู่ระบบได้ทั้งหมด ({userList.length} บัญชี)
+            </span>
+            <span className="text-slate-500 text-[11px]">
+              * รหัสผ่านที่ตั้งไว้ที่นี่จะถูกนำไปตรวจสอบในหน้าล็อกอินจริงทันที
+            </span>
+          </div>
           <table className="w-full text-left text-xs text-slate-700">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th className="py-3 px-4">ชื่อ - นามสกุล</th>
                 <th className="py-3 px-4">Username</th>
+                <th className="py-3 px-4">รหัสผ่าน (Password)</th>
                 <th className="py-3 px-4">ตำแหน่ง / สิทธิ์</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">เข้าสู่ระบบล่าสุด</th>
@@ -227,44 +280,132 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {userList.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-50">
-                  <td className="py-3 px-4 font-bold text-slate-900">{u.name}</td>
-                  <td className="py-3 px-4 text-slate-600">{u.username}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      u.role === 'admin' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'
-                    }`}>
-                      {u.role === 'admin' ? 'ผู้ดูแลระบบ' : u.role === 'pharmacist' ? 'เภสัชกร' : 'เจ้าหน้าที่'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-slate-500">{u.email}</td>
-                  <td className="py-3 px-4 text-slate-400">{u.lastLogin}</td>
-                  <td className="py-3 px-4 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <button
-                        onClick={() => handleOpenEditUser(u)}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                        title="แก้ไขข้อมูลผู้ใช้"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      {u.username !== 'admin' && (
+              {userList.map((u) => {
+                const effectivePassword = u.password || (u.username === 'admin' ? 'vachira123' : '1234');
+                const isVisible = visiblePasswords[u.id];
+
+                return (
+                  <tr key={u.id} className="hover:bg-slate-50">
+                    <td className="py-3 px-4 font-bold text-slate-900">{u.name}</td>
+                    <td className="py-3 px-4 font-mono text-slate-700 font-semibold">{u.username}</td>
+                    <td className="py-3 px-4">
+                      <div className="inline-flex items-center gap-1.5 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-lg">
+                        <Key className="w-3 h-3 text-slate-400 shrink-0" />
+                        <span className="font-mono text-slate-800 font-bold tracking-wider">
+                          {isVisible ? effectivePassword : '••••••••'}
+                        </span>
                         <button
-                          onClick={() => handleDeleteUser(u)}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                          title="ลบผู้ใช้นี้"
+                          type="button"
+                          onClick={() => togglePasswordVisibility(u.id)}
+                          className="p-0.5 text-slate-400 hover:text-slate-700 rounded transition-colors cursor-pointer"
+                          title={isVisible ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน'}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          {isVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditPassword(u)}
+                          className="p-0.5 text-purple-600 hover:text-purple-800 rounded transition-colors ml-1 cursor-pointer"
+                          title="เปลี่ยนรหัสผ่านผู้ใช้นี้"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        u.role === 'admin' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'
+                      }`}>
+                        {u.role === 'admin' ? 'ผู้ดูแลระบบ' : u.role === 'pharmacist' ? 'เภสัชกร' : 'เจ้าหน้าที่'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-slate-500">{u.email}</td>
+                    <td className="py-3 px-4 text-slate-400">{u.lastLogin}</td>
+                    <td className="py-3 px-4 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleOpenEditPassword(u)}
+                          className="p-1.5 text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+                          title="เปลี่ยนรหัสผ่าน"
+                        >
+                          <KeyRound className="w-3.5 h-3.5" />
+                        </button>
+                        {u.username !== 'admin' && (
+                          <button
+                            onClick={() => handleDeleteUser(u)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                            title="ลบผู้ใช้นี้"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
+
+        {/* Edit Password Modal */}
+        {editingPasswordUser && (
+          <div
+            className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4"
+            onClick={() => setEditingPasswordUser(null)}
+          >
+            <div
+              className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 text-purple-700">
+                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                  <KeyRound className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">เปลี่ยนรหัสผ่าน</h3>
+                  <p className="text-xs text-slate-500">{editingPasswordUser.name} ({editingPasswordUser.username})</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSaveNewPassword} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    กำหนดรหัสผ่านใหม่:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editingPasswordVal}
+                    onChange={(e) => setEditingPasswordVal(e.target.value)}
+                    placeholder="กรอกรหัสผ่านใหม่"
+                    className="w-full px-3.5 py-2.5 border rounded-xl border-slate-300 text-sm font-mono focus:ring-2 focus:ring-purple-500 focus:outline-hidden bg-slate-50/50"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    รหัสผ่านนี้จะอัปเดตและสามารถใช้ล็อกอินได้ทันที
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setEditingPasswordUser(null)}
+                    className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>บันทึกรหัสผ่านใหม่</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Delete User In-App Confirmation Modal */}
         {deleteConfirmUser && (
@@ -320,108 +461,6 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
                   <span>ยืนยันลบผู้ใช้นี้</span>
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Edit User Modal */}
-        {editingUser && (
-          <div
-            className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4"
-            onClick={() => setEditingUser(null)}
-          >
-            <div
-              className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <Edit2 className="w-4 h-4 text-blue-600" />
-                  <span>แก้ไขข้อมูลผู้ใช้งาน</span>
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setEditingUser(null)}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSaveEditUser} className="space-y-3 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">ชื่อ - สกุล</label>
-                  <input
-                    type="text"
-                    required
-                    value={editingUser.name}
-                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-xl border-slate-300"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Username</label>
-                  <input
-                    type="text"
-                    required
-                    disabled={editingUser.username === 'admin'}
-                    value={editingUser.username}
-                    onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-xl border-slate-300 ${
-                      editingUser.username === 'admin' ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''
-                    }`}
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">ตำแหน่ง / สิทธิ์</label>
-                  <select
-                    value={editingUser.role}
-                    disabled={editingUser.username === 'admin'}
-                    onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as any })}
-                    className="w-full px-3 py-2 border rounded-xl border-slate-300 bg-white"
-                  >
-                    <option value="pharmacist">เภสัชกร (Pharmacist)</option>
-                    <option value="admin">ผู้ดูแลระบบ (Admin)</option>
-                    <option value="staff">เจ้าหน้าที่สนับสนุน (Staff)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">กลุ่มงาน / แผนก</label>
-                  <input
-                    type="text"
-                    value={editingUser.department || ''}
-                    onChange={(e) => setEditingUser({ ...editingUser, department: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-xl border-slate-300"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={editingUser.email}
-                    onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-xl border-slate-300"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setEditingUser(null)}
-                    className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
-                  >
-                    ยกเลิก
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>บันทึกการแก้ไข</span>
-                  </button>
-                </div>
-              </form>
             </div>
           </div>
         )}
@@ -516,7 +555,7 @@ export const AdminServicesAndDocs: React.FC<AdminServicesAndDocsProps> = ({
             <label className="block font-bold text-slate-700 mb-1">โทรศัพท์สายตรงห้องยา</label>
             <input
               type="text"
-              defaultValue="032-523000 ต่อ 1121"
+              defaultValue="076-361234 ต่อ 1234"
               className="w-full px-3 py-2 border rounded-xl border-slate-300"
             />
           </div>
