@@ -41,10 +41,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const handleUpdate = () => {
       setCategories(getStoredSidebarMenu());
     };
-    window.addEventListener('huahin_sidebar_menu_changed', handleUpdate);
+    window.addEventListener('vachira_sidebar_menu_changed', handleUpdate);
     window.addEventListener('storage', handleUpdate);
     return () => {
-      window.removeEventListener('huahin_sidebar_menu_changed', handleUpdate);
+      window.removeEventListener('vachira_sidebar_menu_changed', handleUpdate);
       window.removeEventListener('storage', handleUpdate);
     };
   }, []);
@@ -71,23 +71,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  // State to track which categories and nested groups are expanded
-  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
-    about: false,
-    structure: false,
-    drug_info: true, // open by default
-    policies_guidelines: false,
-    news_pr: false,
-    academic: false,
-    activities: false,
-  });
-
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    group_amr: true,
-    group_warfarin: false,
-    group_cannabis: false,
-    group_cpg: true,
-  });
+  // State to track which categories and nested groups are expanded (ย่อพับไว้ทั้งหมดเป็นค่าเริ่มต้น)
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleCategory = (catId: string) => {
     setExpandedCategories((prev) => ({
@@ -107,6 +93,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleSelect = (sectionId: string) => {
     onNavigate(sectionId as PublicNavSection);
     onClose();
+  };
+
+  const handleSelectHome = () => {
+    // ย่อพับทุกหมวดหมู่และหัวข้อย่อยเมื่อเลือกหน้าแรก
+    setExpandedCategories({});
+    setExpandedGroups({});
+    handleSelect('home');
   };
 
   return (
@@ -130,8 +123,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Sidebar Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-emerald-800 to-teal-800 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center p-1.5 shadow-inner text-white">
-              <Pill className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center p-1.5 shadow-inner overflow-hidden">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/th/1/12/Logo_of_Vachira_Phuket_Hospital.jpg"
+                alt="Logo of Hospital"
+                className="w-full h-full object-contain rounded-lg"
+              />
             </div>
             <div>
               <h2 className="font-bold text-sm tracking-tight leading-tight">
@@ -156,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* 🏠 หน้าแรก */}
           <button
             id="nav-home"
-            onClick={() => handleSelect('home')}
+            onClick={handleSelectHome}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
               activeSection === 'home'
                 ? 'bg-emerald-50 text-emerald-800 font-semibold border-l-4 border-emerald-600 shadow-xs'
