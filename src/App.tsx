@@ -136,9 +136,13 @@ export default function App() {
   const [documents, setDocuments] = useState<DocumentDownload[]>(() =>
     getStoredData('vachira_phuket_documents', INITIAL_DOCUMENTS)
   );
-  const [users, setUsers] = useState<AdminUser[]>(() =>
-    getStoredData('vachira_phuket_users', INITIAL_USERS)
-  );
+  const [users, setUsers] = useState<AdminUser[]>(() => {
+    const loaded = getStoredData('vachira_phuket_users', INITIAL_USERS);
+    return loaded.map((u: AdminUser) => ({
+      ...u,
+      password: u.password || (u.username === 'admin' ? 'vachira123' : '1234'),
+    }));
+  });
   const [consultations, setConsultations] = useState<PharmacistConsultationItem[]>(() =>
     getStoredData('vachira_phuket_consultations', INITIAL_CONSULTATIONS)
   );
@@ -291,8 +295,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAdminLoginSuccess = (username: string) => {
-    setCurrentAdminUser(username);
+  const handleAdminLoginSuccess = (user: AdminUser | string) => {
+    const displayName =
+      typeof user === 'string'
+        ? user
+        : `${user.name} (${user.role === 'admin' ? 'Admin' : user.role === 'pharmacist' ? 'เภสัชกร' : 'เจ้าหน้าที่'})`;
+    setCurrentAdminUser(displayName);
     setAppMode('admin_dashboard');
     setAdminSection('dashboard');
   };
@@ -368,6 +376,8 @@ export default function App() {
   if (appMode === 'admin_login') {
     return (
       <AdminLogin
+        users={users}
+        onUpdateUsers={setUsers}
         onLoginSuccess={handleAdminLoginSuccess}
         onBackToPublic={() => setAppMode('public')}
       />
