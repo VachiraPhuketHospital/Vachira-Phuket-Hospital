@@ -19,7 +19,9 @@ import {
   RotateCcw,
   Sparkles,
   FolderPlus,
+  Image as ImageIcon,
 } from 'lucide-react';
+import { compressImageFile } from '../../utils/fileHelpers';
 import {
   NEW_SIDEBAR_MENU,
   getStoredSidebarMenu,
@@ -28,6 +30,14 @@ import {
   SubMenuItem,
   NestedSubGroup,
 } from '../../data/sidebarMenuData';
+
+const PRESET_TOPIC_IMAGES = [
+  { label: 'ห้องจ่ายยาผู้ป่วยนอก OPD', url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'ห้องยาหลักและการคัดกรองใบสั่งยา', url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'เภสัชกรให้คำปรึกษาการใช้ยา', url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'คลังเวชภัณฑ์และการจัดเก็บยา', url: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1200&q=80' },
+  { label: 'งานผลิตและผสมยาเฉพาะคราว', url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80' },
+];
 
 export const AdminMenuTopicsManager: React.FC = () => {
   const [categories, setCategories] = useState<NavMenuCategory[]>(() => getStoredSidebarMenu());
@@ -48,6 +58,7 @@ export const AdminMenuTopicsManager: React.FC = () => {
     badge: string;
     description: string;
     content: string;
+    imageUrl: string;
     fileName: string;
     fileUrl: string;
     isNew: boolean;
@@ -59,6 +70,7 @@ export const AdminMenuTopicsManager: React.FC = () => {
     badge: '',
     description: '',
     content: '',
+    imageUrl: '',
     fileName: '',
     fileUrl: '',
     isNew: false,
@@ -102,6 +114,7 @@ export const AdminMenuTopicsManager: React.FC = () => {
       badge: item.badge || '',
       description: item.description || '',
       content: item.content || '',
+      imageUrl: item.imageUrl || '',
       fileName: item.fileName || '',
       fileUrl: item.fileUrl || '',
       isNew: false,
@@ -120,6 +133,7 @@ export const AdminMenuTopicsManager: React.FC = () => {
       badge: '',
       description: '',
       content: '',
+      imageUrl: '',
       fileName: '',
       fileUrl: '',
       isNew: true,
@@ -256,6 +270,7 @@ export const AdminMenuTopicsManager: React.FC = () => {
       badge: editForm.badge.trim() || undefined,
       description: editForm.description.trim() || undefined,
       content: editForm.content.trim() || undefined,
+      imageUrl: editForm.imageUrl.trim() || undefined,
       fileName: editForm.fileName.trim() || undefined,
       fileUrl: editForm.fileUrl.trim() || undefined,
     };
@@ -341,6 +356,23 @@ export const AdminMenuTopicsManager: React.FC = () => {
       }));
     };
     reader.readAsDataURL(file);
+  };
+
+  // Handle Image Upload with automatic compression
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const compressed = await compressImageFile(file, 1200, 0.75);
+      setEditForm((prev) => ({
+        ...prev,
+        imageUrl: compressed,
+      }));
+      setNotification({ type: 'success', message: `อัปโหลดรูปภาพ "${file.name}" เรียบร้อยแล้ว` });
+    } catch (err) {
+      alert('ไม่สามารถประมวลผลรูปภาพได้ กรุณาเลือกไฟล์ภาพขนาดไม่เกิน 5MB');
+    }
   };
 
   // Reset to default
@@ -527,12 +559,20 @@ export const AdminMenuTopicsManager: React.FC = () => {
                               {item.description}
                             </p>
                           )}
-                          {item.fileName && (
-                            <div className="mt-2 flex items-center gap-1 text-[11px] text-teal-700 bg-teal-50 px-2 py-1 rounded-md max-w-fit">
-                              <FileText className="w-3 h-3" />
-                              <span className="truncate max-w-[180px]">{item.fileName}</span>
-                            </div>
-                          )}
+                          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                            {item.imageUrl && (
+                              <div className="flex items-center gap-1 text-[11px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200/60">
+                                <ImageIcon className="w-3 h-3" />
+                                <span>มีรูปภาพ</span>
+                              </div>
+                            )}
+                            {item.fileName && (
+                              <div className="flex items-center gap-1 text-[11px] text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60">
+                                <FileText className="w-3 h-3" />
+                                <span className="truncate max-w-[140px]">{item.fileName}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Action buttons */}
@@ -619,11 +659,19 @@ export const AdminMenuTopicsManager: React.FC = () => {
                                     {subItem.description}
                                   </p>
                                 )}
-                                {subItem.fileName && (
-                                  <span className="inline-block mt-1 text-[10px] text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">
-                                    📎 {subItem.fileName}
-                                  </span>
-                                )}
+                                <div className="flex flex-wrap items-center gap-1 mt-1">
+                                  {subItem.imageUrl && (
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200/60">
+                                      <ImageIcon className="w-2.5 h-2.5" />
+                                      <span>รูป</span>
+                                    </span>
+                                  )}
+                                  {subItem.fileName && (
+                                    <span className="inline-block text-[10px] text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">
+                                      📎 {subItem.fileName}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
 
                               <div className="flex items-center gap-1 shrink-0">
@@ -848,6 +896,97 @@ export const AdminMenuTopicsManager: React.FC = () => {
                   placeholder="พิมพ์ข้อความรายละเอียดคำแนะนำ วัตถุประสงค์ แนวทางปฏิบัติ หรือขั้นตอนการใช้ยาสำหรับแสดงในหน้านี้..."
                   className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-sans"
                 />
+              </div>
+
+              {/* Image Upload / URL / Presets for Admin */}
+              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-emerald-600" />
+                    <span>รูปภาพประกอบหัวข้อ / ภาพประชาสัมพันธ์ (Featured Image)</span>
+                  </label>
+                  {editForm.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setEditForm((prev) => ({ ...prev, imageUrl: '' }))}
+                      className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>ลบรูปภาพ</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Preview if exists */}
+                {editForm.imageUrl && (
+                  <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-100 max-h-48 w-full">
+                    <img
+                      src={editForm.imageUrl}
+                      alt="Preview"
+                      className="w-full h-44 object-cover"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <span className="text-[10px] font-bold bg-slate-900/80 text-white px-2 py-1 rounded-md shadow-xs">
+                        ✓ มีรูปภาพประกอบ
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-300 hover:border-emerald-500 text-xs font-semibold text-slate-700 shadow-2xs transition-colors">
+                    <Upload className="w-4 h-4 text-emerald-600" />
+                    <span>เลือกรูปภาพจากเครื่อง (JPG/PNG/WebP)</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                    />
+                  </label>
+                </div>
+
+                {/* Preset hospital pharmacy images */}
+                <div>
+                  <span className="text-[11px] font-semibold text-slate-500 block mb-1.5">
+                    หรือเลือกรูปภาพมาตรฐานกลุ่มงานเภสัชกรรม:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PRESET_TOPIC_IMAGES.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setEditForm((prev) => ({ ...prev, imageUrl: preset.url }))}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all ${
+                          editForm.imageUrl === preset.url
+                            ? 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold shadow-2xs'
+                            : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Direct URL */}
+                <div>
+                  <span className="text-[11px] text-slate-400 block mb-1">
+                    หรือระบุ URL รูปภาพโดยตรง (Direct Image URL):
+                  </span>
+                  <input
+                    type="text"
+                    value={editForm.imageUrl.startsWith('data:') ? '(รูปภาพที่อัปโหลดจากเครื่อง)' : editForm.imageUrl}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (!val.startsWith('(รูปภาพ')) {
+                        setEditForm((prev) => ({ ...prev, imageUrl: val }));
+                      }
+                    }}
+                    placeholder="https://example.com/hospital-pharmacy.jpg"
+                    className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  />
+                </div>
               </div>
 
               {/* Attach File / PDF / Document */}
