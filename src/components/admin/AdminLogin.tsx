@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, User, KeyRound, ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldAlert, Users, Sparkles } from 'lucide-react';
+import { Lock, User, KeyRound, ArrowLeft, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import { AdminUser } from '../../types';
 
 interface AdminLoginProps {
@@ -36,7 +36,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
       );
 
       if (!foundUser) {
-        setErrorMsg(`ไม่พบชื่อผู้ใช้ "${inputUser}" ในระบบจัดการผู้ใช้งาน & เภสัชกร`);
+        setErrorMsg(`ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง`);
         setIsLoading(false);
         return;
       }
@@ -46,7 +46,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
         foundUser.password || (foundUser.username === 'admin' ? 'vachira123' : '1234');
 
       if (inputPass !== expectedPassword) {
-        setErrorMsg('รหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบรหัสผ่านที่ตั้งไว้ในระบบ');
+        setErrorMsg('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         setIsLoading(false);
         return;
       }
@@ -75,13 +75,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
     }, 350);
   };
 
-  const handleQuickFill = (user: AdminUser) => {
-    setUsername(user.username);
-    const pwd = user.password || (user.username === 'admin' ? 'vachira123' : '1234');
-    setPassword(pwd);
-    setErrorMsg('');
-  };
-
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background decoration */}
@@ -93,7 +86,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
       <div className="absolute top-6 left-6 z-10">
         <button
           onClick={onBackToPublic}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/10 transition-colors shadow-xs"
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/10 transition-colors shadow-xs cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>กลับหน้าหลักประชาชน</span>
@@ -113,7 +106,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
             โรงพยาบาลวชิระภูเก็ต
           </p>
           <p className="text-xs text-slate-400 mt-1 pb-4 border-b border-slate-100">
-            ระบบตรวจสอบสิทธิ์เข้าใช้งาน (Authentication) เชื่อมต่อฐานข้อมูลผู้ใช้งาน
+            ระบบเข้าสู่ระบบสำหรับเจ้าหน้าที่และเภสัชกร
           </p>
 
           {/* Form */}
@@ -145,7 +138,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                     setUsername(e.target.value);
                     if (errorMsg) setErrorMsg('');
                   }}
-                  placeholder="เช่น admin หรือ username เภสัชกร"
+                  placeholder="กรอกชื่อผู้ใช้ของคุณ"
                   className="block w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 bg-slate-50/50"
                 />
               </div>
@@ -171,13 +164,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                     setPassword(e.target.value);
                     if (errorMsg) setErrorMsg('');
                   }}
-                  placeholder="กรอกรหัสผ่านที่ตั้งไว้ในระบบ"
+                  placeholder="กรอกรหัสผ่านของคุณ"
                   className="block w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 bg-slate-50/50"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -197,63 +190,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
               </button>
             </div>
           </form>
-
-          {/* Registered Users from Users Management */}
-          {users.length > 0 && (
-            <div className="mt-5 pt-4 border-t border-slate-100 text-left">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-purple-600" />
-                  <span>บัญชีที่ลงทะเบียนในระบบ ({users.length} บัญชี):</span>
-                </span>
-                <span className="text-[10px] text-slate-400">คลิกเพื่อกรอก</span>
-              </div>
-              <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                {users.map((u) => {
-                  const pwd = u.password || (u.username === 'admin' ? 'vachira123' : '1234');
-                  const isCurrent = username.trim().toLowerCase() === u.username.toLowerCase();
-                  return (
-                    <button
-                      key={u.id}
-                      type="button"
-                      onClick={() => handleQuickFill(u)}
-                      className={`w-full text-left p-2 rounded-xl border transition-all flex items-center justify-between text-xs cursor-pointer ${
-                        isCurrent
-                          ? 'bg-emerald-50/90 border-emerald-300 ring-1 ring-emerald-300'
-                          : 'bg-slate-50 border-slate-200 hover:bg-slate-100/80 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="truncate pr-2">
-                        <div className="font-bold text-slate-800 truncate flex items-center gap-1.5">
-                          <span>{u.name}</span>
-                          <span
-                            className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                              u.role === 'admin'
-                                ? 'bg-rose-100 text-rose-700'
-                                : u.role === 'pharmacist'
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : 'bg-slate-200 text-slate-700'
-                            }`}
-                          >
-                            {u.role === 'admin' ? 'Admin' : u.role === 'pharmacist' ? 'เภสัชกร' : 'เจ้าหน้าที่'}
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-slate-500 font-mono mt-0.5">
-                          User: <strong className="text-slate-700">{u.username}</strong> | รหัสผ่าน: <strong className="text-slate-700">{pwd}</strong>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-semibold text-emerald-700 shrink-0 bg-white px-2 py-1 rounded-lg border border-slate-200 shadow-2xs">
-                        เลือก
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2 text-center">
-                * เพิ่ม/แก้ไขผู้ใช้และรหัสผ่านได้ที่เมนู "จัดการผู้ใช้งาน" ในระบบแอดมิน
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
