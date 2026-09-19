@@ -82,6 +82,7 @@ export interface AdminUser {
   department: string;
   email: string;
   lastLogin: string;
+  password?: string;
 }
 
 export interface PharmacistConsultationItem {
@@ -146,3 +147,4 @@ export type AdminSection =
   | 'settings';
 
 export type Language = 'th' | 'en';
+
