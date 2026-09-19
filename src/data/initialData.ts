@@ -6,7 +6,7 @@ export const INITIAL_BANNER: BannerConfig = {
   hospitalName: 'กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
   vision: 'มุ่งเน้นการให้บริการด้านยาอย่างมีคุณภาพ ถูกต้อง รวดเร็ว และได้มาตรฐานสากล',
   badgeText: 'VACHIRA PHUKET HOSPITAL PHARMACY',
-  primaryButtonText: 'ข้อมูลการใช้ยา',
+
   secondaryButtonText: 'ปรึกษาเภสัชกร',
 };
 
