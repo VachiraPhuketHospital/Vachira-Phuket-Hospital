@@ -52,10 +52,11 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
     title: 'เกี่ยวกับกลุ่มงาน',
     iconName: 'Building2',
     items: [
-      {
+{
         id: 'about_vision',
         title: 'วิสัยทัศน์และพันธกิจ',
-        description: 'วิสัยทัศน์ พันธกิจ ค่านิยม และเป้าหมายการดำเนินงานกลุ่มงานเภสัชกรรม โรงพยาบาลหัวหิน',
+        description: 'วิสัยทัศน์ พันธกิจ ค่านิยม และเป้าหมายการดำเนินงานกลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
+        imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5nk7-GhnGTiApCURC5DckqXtv_0mzxEC59usc7m3_Dkoh1Wm0qOTWvAlN&s=10', // เช่น '/vachira-banner.jpg' หรือ URL รูปภาพ
         content: `วิสัยทัศน์ (Vision):
 "เป็นกลุ่มงานเภสัชกรรมชั้นนำระดับตติยภูมิ มุ่งมั่นสู่ความเป็นเลิศด้านการบริบาลทางเภสัชกรรมและระบบยาที่ปลอดภัย ด้วยเทคโนโลยีทันสมัยและบริการด้วยหัวใจ"
 
