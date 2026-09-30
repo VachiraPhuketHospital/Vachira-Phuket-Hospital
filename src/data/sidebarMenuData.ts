@@ -23,7 +23,7 @@ export interface NavMenuCategory {
   groups?: NestedSubGroup[];
 }
 
-export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v3';
+export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v4';
 
 export const getStoredSidebarMenu = (): NavMenuCategory[] => {
   try {
@@ -65,8 +65,8 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
 2. ส่งเสริมการบริบาลทางเภสัชกรรมทั้งผู้ป่วยนอก ผู้ป่วยใน และคลินิกเฉพาะทางอย่างครอบคลุม
 3. ส่งเสริมการใช้ยาอย่างสมเหตุสมผล (Rational Drug Use; RDU) ในโรงพยาบาลและเครือข่ายปฐมภูมิ
 4. พัฒนาศักยภาพบุคลากร งานวิจัย นวัตกรรม และสารสนเทศทางเภสัชกรรมอย่างต่อเนื่อง`,
-        fileUrl: 'https://example.com/document.pdf',
-        fileName: 'เอกสารวิสัยทัศน์และพันธกิจ_รพ_วชิระภูเก็ต.pdf'
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'เอกสารและภาพประกอบ (Google Drive)'
       }
     ]
   },
