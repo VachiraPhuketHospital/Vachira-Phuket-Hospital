@@ -255,6 +255,17 @@ export const INITIAL_KNOWLEDGE: KnowledgeArticle[] = [
 
 export const INITIAL_DOCUMENTS: DocumentDownload[] = [
   {
+    id: 'doc0',
+    title: 'คลังเอกสารและรูปภาพ กลุ่มงานเภสัชกรรม (Google Drive)',
+    category: 'คลังเอกสารและภาพ',
+    fileSize: 'Cloud Drive',
+    fileType: 'LINK',
+    downloads: 1520,
+    date: '30 ก.ย. 2568',
+    url: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+    isExternalLink: true,
+  },
+  {
     id: 'doc1',
     title: 'แบบฟอร์มขอรับบริการส่งยาทางไปรษณีย์ (Vachira Med Post)',
     category: 'บริการผู้ป่วย',
@@ -262,7 +273,7 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 1840,
     date: '10 ส.ค. 2568',
-    url: 'https://drive.google.com/drive/folders/1VGMyRitHtv_-SVCHZgadW_zSVpUtm5LR?usp=sharing',
+    url: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
     isExternalLink: true,
   },
   {
@@ -273,7 +284,7 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 3290,
     date: '01 ส.ค. 2568',
-    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    url: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
     isExternalLink: true,
   },
   {
@@ -284,7 +295,7 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 980,
     date: '15 ก.ค. 2568',
-    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    url: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
     isExternalLink: true,
   },
   {
@@ -295,7 +306,7 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 640,
     date: '02 ก.ค. 2568',
-    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    url: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
     isExternalLink: true,
   }
 ];
