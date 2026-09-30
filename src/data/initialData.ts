@@ -262,7 +262,8 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 1840,
     date: '10 ส.ค. 2568',
-    url: '#',
+    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    isExternalLink: true,
   },
   {
     id: 'doc2',
@@ -272,7 +273,8 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 3290,
     date: '01 ส.ค. 2568',
-    url: '#',
+    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    isExternalLink: true,
   },
   {
     id: 'doc3',
@@ -282,7 +284,8 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 980,
     date: '15 ก.ค. 2568',
-    url: '#',
+    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    isExternalLink: true,
   },
   {
     id: 'doc4',
@@ -292,7 +295,8 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 640,
     date: '02 ก.ค. 2568',
-    url: '#',
+    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    isExternalLink: true,
   }
 ];
 
