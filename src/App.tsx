@@ -133,9 +133,21 @@ export default function App() {
   const [articles, setArticles] = useState<KnowledgeArticle[]>(() =>
     getStoredData('vachira_phuket_articles', INITIAL_KNOWLEDGE)
   );
-  const [documents, setDocuments] = useState<DocumentDownload[]>(() =>
-    getStoredData('vachira_phuket_documents', INITIAL_DOCUMENTS)
-  );
+  const [documents, setDocuments] = useState<DocumentDownload[]>(() => {
+    const loaded = getStoredData<DocumentDownload[]>('vachira_phuket_documents', INITIAL_DOCUMENTS);
+    // If user has old cache with '#' or missing doc0, ensure new drive links are merged
+    const hasDoc0 = loaded.some(d => d.id === 'doc0');
+    let merged = hasDoc0 ? loaded : [INITIAL_DOCUMENTS[0], ...loaded];
+    return merged.map(doc => {
+      if (!doc.url || doc.url === '#') {
+        const match = INITIAL_DOCUMENTS.find(d => d.id === doc.id);
+        if (match && match.url && match.url !== '#') {
+          return { ...doc, url: match.url, isExternalLink: match.isExternalLink };
+        }
+      }
+      return doc;
+    });
+  });
   const [users, setUsers] = useState<AdminUser[]>(() => {
     const loaded = getStoredData('vachira_phuket_users', INITIAL_USERS);
     return loaded.map((u: AdminUser) => ({
