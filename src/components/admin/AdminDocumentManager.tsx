@@ -19,6 +19,12 @@ import {
   FileSpreadsheet,
   FileCode,
   Image as ImageIcon,
+  Copy,
+  Check,
+  HelpCircle,
+  Info,
+  Sparkles,
+  Share2,
 } from 'lucide-react';
 import { formatBytes, getFileTypeBadge, downloadDocumentFile } from '../../utils/fileHelpers';
 
@@ -67,6 +73,9 @@ export const AdminDocumentManager: React.FC<AdminDocumentManagerProps> = ({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [deleteConfirmDoc, setDeleteConfirmDoc] = useState<DocumentDownload | null>(null);
 
+  const [isSyncGuideOpen, setIsSyncGuideOpen] = useState(false);
+  const [copiedCodeSuccess, setCopiedCodeSuccess] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string) => {
@@ -74,6 +83,35 @@ export const AdminDocumentManager: React.FC<AdminDocumentManagerProps> = ({
     setTimeout(() => {
       setToastMessage((prev) => (prev === msg ? null : prev));
     }, 3500);
+  };
+
+  const generateInitialDataCode = () => {
+    // Sanitize documents for clean initialData.ts format
+    const cleanDocs = documents.map(d => ({
+      id: d.id,
+      title: d.title,
+      description: d.description || '',
+      category: d.category,
+      fileSize: d.fileSize,
+      fileType: d.fileType,
+      downloads: d.downloads || 0,
+      date: d.date,
+      url: d.url,
+      fileName: d.fileName,
+      isExternalLink: d.isExternalLink,
+    }));
+    return `export const INITIAL_DOCUMENTS: DocumentDownload[] = ${JSON.stringify(cleanDocs, null, 2)};`;
+  };
+
+  const handleCopyCodeForGithub = () => {
+    const code = generateInitialDataCode();
+    navigator.clipboard.writeText(code).then(() => {
+      setCopiedCodeSuccess(true);
+      showToast('คัดลอกโค้ด INITIAL_DOCUMENTS เรียบร้อยแล้ว!');
+      setTimeout(() => setCopiedCodeSuccess(false), 3000);
+    }).catch(() => {
+      showToast('ไม่สามารถคัดลอกอัตโนมัติได้ โปรดคัดลอกด้วยตนเองจากหน้าต่าง');
+    });
   };
 
   // Helper to format today's Thai date
@@ -296,18 +334,75 @@ export const AdminDocumentManager: React.FC<AdminDocumentManagerProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsSyncGuideOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-semibold text-xs transition-colors"
+            title="คลิกดูคำแนะนำ: วิธีทำให้เอกสารปรากฏในมือถือและเครื่องอื่น"
+          >
+            <HelpCircle className="w-4 h-4 text-amber-600" />
+            <span>วิธีทำให้มือถือเห็นเอกสาร</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCopyCodeForGithub}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-semibold text-xs transition-colors"
+            title="คัดลอกโค้ดเอกสารทั้งหมด เพื่อนำไปใส่ในไฟล์ initialData.ts บน GitHub"
+          >
+            {copiedCodeSuccess ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span className="text-emerald-700 font-bold">คัดลอกโค้ดแล้ว!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 text-slate-600" />
+                <span>คัดลอกโค้ดสำหรับ GitHub</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={() => {
               resetForm();
               setIsAddFormOpen(!isAddFormOpen);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>+ อัปโหลดไฟล์ / เพิ่มแบบฟอร์ม</span>
           </button>
         </div>
+      </div>
+
+      {/* Info Notice: Why files might not appear on other devices */}
+      <div className="bg-gradient-to-r from-amber-50 via-amber-50/70 to-emerald-50/40 p-4 rounded-2xl border border-amber-200 text-xs text-amber-950 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-xl bg-amber-100 text-amber-800 shrink-0 mt-0.5">
+            <Info className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-amber-900 text-sm">
+              💡 ทำไมเอกสารที่เพิ่มในคอม ถึงไม่ไปโผล่ในมือถือหรือเครื่องอื่น?
+            </div>
+            <p className="text-amber-800 text-xs mt-0.5">
+              เว็บอยู่บน GitHub Pages ข้อมูลที่เพิ่มในหน้านี้จะเก็บในหน่วยความจำของคอมเครื่องนี้เท่านั้น หากต้องการให้มือถือและทุกคนเปิดดูได้:
+              <span className="font-semibold text-amber-950 ml-1">
+                แนะนำให้ใช้การ &ldquo;แนบด้วยลิงก์ Google Drive&rdquo; และกดปุ่ม &ldquo;คัดลอกโค้ดสำหรับ GitHub&rdquo; นำไปวางใน GitHub
+              </span>
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsSyncGuideOpen(true)}
+          className="shrink-0 px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-lg font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 self-end md:self-center"
+        >
+          <span>ดูขั้นตอนอย่างละเอียด</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* Overview Stat Cards */}
@@ -479,9 +574,19 @@ export const AdminDocumentManager: React.FC<AdminDocumentManagerProps> = ({
                 />
                 <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                เคล็ดลับ: หากเป็น Google Drive ตรวจสอบให้แน่ใจว่าได้เปิดสิทธิ์การเข้าถึงเป็น &quot;ทุกคนที่มีลิงก์มีสิทธิ์อ่าน&quot;
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-500 mt-1">
+                <span>เคล็ดลับ: ตรวจสอบให้แน่ใจว่าได้เปิดสิทธิ์การเข้าถึงเป็น &quot;ทุกคนที่มีลิงก์มีสิทธิ์อ่าน&quot;</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExternalUrl('https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing');
+                    if (!title) setTitle('คลังเอกสารและรูปภาพ (Google Drive)');
+                  }}
+                  className="text-emerald-700 hover:text-emerald-800 font-semibold underline inline-flex items-center gap-1"
+                >
+                  + ใส่ลิงก์ Google Drive (โฟลเดอร์ 11)
+                </button>
+              </div>
             </div>
           )}
 
@@ -920,6 +1025,108 @@ export const AdminDocumentManager: React.FC<AdminDocumentManagerProps> = ({
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>ยืนยันลบเอกสารนี้</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sync Guide & GitHub Code Modal */}
+      {isSyncGuideOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+          onClick={() => setIsSyncGuideOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150 my-8 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    วิธีทำให้เอกสารและข้อมูลปรากฏบนมือถือและทุกเครื่อง (100%)
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    ขั้นตอนง่ายๆ สำหรับเว็บไซต์ที่ทำงานบน GitHub Pages
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSyncGuideOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs text-slate-700">
+              {/* Step 1 */}
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 text-sm flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs">1</span>
+                  <span>ฝากไฟล์เอกสารไว้บน Google Drive (เพื่อให้ดาวน์โหลดได้จากทุกเครื่อง)</span>
+                </div>
+                <ol className="list-decimal list-inside space-y-1 text-slate-600 pl-2">
+                  <li>นำไฟล์ PDF หรือแบบฟอร์มไปอัปโหลดไว้ใน <strong>Google Drive</strong> หรือ <strong>OneDrive</strong></li>
+                  <li>คลิกขวาที่ไฟล์ เลือก <strong>แชร์ (Share)</strong></li>
+                  <li>ปรับตรง <em>การเข้าถึงทั่วไป</em> ให้เป็น <strong>&quot;ทุกคนที่มีลิงก์มีสิทธิ์อ่าน&quot; (Anyone with the link can view)</strong></li>
+                  <li>กด <strong>คัดลอกลิงก์ (Copy Link)</strong> แล้วนำมาวางในช่อง <em>&quot;ใส่ลิงก์ดาวน์โหลด (URL)&quot;</em> ในหน้าแอดมินนี้</li>
+                </ol>
+              </div>
+
+              {/* Step 2 */}
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 text-sm flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs">2</span>
+                  <span>คัดลอกโค้ดข้อมูลเอกสารล่าสุด</span>
+                </div>
+                <p className="text-slate-600 mb-2">
+                  ระบบได้รวมรายการเอกสารทั้งหมด {documents.length} รายการ (รวมรายการที่คุณเพิ่งเพิ่มหรือแก้ไข) พร้อมให้นำไปใส่ในโปรเจกต์:
+                </p>
+                <div className="relative">
+                  <pre className="p-3 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] max-h-40 font-mono">
+                    {generateInitialDataCode()}
+                  </pre>
+                  <button
+                    type="button"
+                    onClick={handleCopyCodeForGithub}
+                    className="absolute top-2 right-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
+                  >
+                    {copiedCodeSuccess ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedCodeSuccess ? 'คัดลอกสำเร็จแล้ว!' : 'กดคัดลอกโค้ด'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                <div className="font-bold text-emerald-950 text-sm flex items-center gap-2 mb-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs">3</span>
+                  <span>นำโค้ดไปวางใน GitHub (ทำครั้งเดียว แสดงผลถาวรทุกอุปกรณ์)</span>
+                </div>
+                <ol className="list-decimal list-inside space-y-1 text-emerald-900 pl-2">
+                  <li>เปิด GitHub ไปที่ Repository ของคุณ</li>
+                  <li>เข้าไปที่ไฟล์ <code>src/data/initialData.ts</code></li>
+                  <li>กดไอคอนรูป <strong>ดินสอ (Edit this file)</strong> ที่มุมขวาบน</li>
+                  <li>ค้นหาท่อน <code>export const INITIAL_DOCUMENTS: DocumentDownload[] = ...</code> แล้ววางโค้ดที่คัดลอกไว้ทับลงไป</li>
+                  <li>กดปุ่มสีเขียว <strong>Commit changes...</strong> ด้านบนขวา</li>
+                  <li>รอประมาณ 1-2 นาที เมื่อเปิดดูเว็บผ่านมือถือ เอกสารจะแสดงขึ้นมาตรงกัน 100% ครับ</li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setIsSyncGuideOpen(false)}
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
+              >
+                เข้าใจแล้ว / ปิดหน้าต่าง
               </button>
             </div>
           </div>
