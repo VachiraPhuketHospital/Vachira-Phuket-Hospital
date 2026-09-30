@@ -87,21 +87,42 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
     }
   }
 
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showFeedback = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
   const handleDownload = () => {
     if (foundItem?.fileUrl) {
+      if (foundItem.fileUrl.startsWith('http://') || foundItem.fileUrl.startsWith('https://')) {
+        window.open(foundItem.fileUrl, '_blank', 'noopener,noreferrer');
+        showFeedback(foundItem.fileUrl.includes('drive.google.com') ? 'กำลังเปิด Google Drive ในแท็บใหม่...' : 'กำลังเปิดดูเอกสาร...');
+        return;
+      }
       const link = document.createElement('a');
       link.href = foundItem.fileUrl;
       link.download = foundItem.fileName || `${foundTitle}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      showFeedback(`กำลังดาวน์โหลด: ${foundItem.fileName || foundTitle}`);
     } else {
-      alert(`กำลังเปิดดูเอกสาร: ${foundTitle} (ฉบับสมบูรณ์กลุ่มงานเภสัชกรรม)`);
+      showFeedback(`กำลังเปิดดูเอกสาร: ${foundTitle} (กลุ่มงานเภสัชกรรม)`);
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-200 relative">
+      {/* Floating feedback toast */}
+      {toast && (
+        <div className="fixed top-20 right-4 z-50 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-top-2">
+          <ExternalLink className="w-4 h-4 text-emerald-400" />
+          <span>{toast}</span>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs">
         <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -233,21 +254,36 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
           <div className="p-5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <FileText className="w-4 h-4 text-emerald-600" />
+                {foundItem?.fileUrl?.includes('drive.google.com') ? (
+                  <ExternalLink className="w-4 h-4 text-emerald-600" />
+                ) : (
+                  <FileText className="w-4 h-4 text-emerald-600" />
+                )}
                 <span>
                   {foundItem?.fileName ? `เอกสารแนบ: ${foundItem.fileName}` : 'เอกสารและแนวทางปฏิบัติฉบับสมบูรณ์ (PDF / Guidelines)'}
                 </span>
               </h4>
               <p className="text-xs text-slate-500">
-                ไฟล์เอกสารทางการ สำหรับบุคลากรทางการแพทย์ แพทย์ พยาบาล และเภสัชกร
+                {foundItem?.fileUrl?.includes('drive.google.com')
+                  ? 'เอกสารและภาพประกอบเชื่อมโยงผ่าน Google Drive (เปิดดูและดาวน์โหลดได้จากทุกอุปกรณ์)'
+                  : 'ไฟล์เอกสารทางการ สำหรับบุคลากรทางการแพทย์ แพทย์ พยาบาล และเภสัชกร'}
               </p>
             </div>
             <button
               onClick={handleDownload}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>{foundItem?.fileName ? `ดาวน์โหลด (${foundItem.fileName})` : 'เปิดดู / ดาวน์โหลดเอกสาร'}</span>
+              {foundItem?.fileUrl?.includes('drive.google.com') ? (
+                <>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>เปิด Google Drive</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{foundItem?.fileName ? `ดาวน์โหลด (${foundItem.fileName})` : 'เปิดดู / ดาวน์โหลดเอกสาร'}</span>
+                </>
+              )}
             </button>
           </div>
 
