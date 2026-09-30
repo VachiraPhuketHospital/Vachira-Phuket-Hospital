@@ -20,6 +20,9 @@ import {
   Sparkles,
   FolderPlus,
   Image as ImageIcon,
+  Copy,
+  Check,
+  HelpCircle,
 } from 'lucide-react';
 import { compressImageFile } from '../../utils/fileHelpers';
 import {
@@ -91,6 +94,8 @@ export const AdminMenuTopicsManager: React.FC = () => {
   });
 
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [copiedCodeSuccess, setCopiedCodeSuccess] = useState(false);
+  const [isSyncGuideOpen, setIsSyncGuideOpen] = useState(false);
 
   useEffect(() => {
     if (notification) {
@@ -102,6 +107,20 @@ export const AdminMenuTopicsManager: React.FC = () => {
   const handleSaveToStorage = (updatedCategories: NavMenuCategory[]) => {
     setCategories(updatedCategories);
     saveSidebarMenu(updatedCategories);
+  };
+
+  const handleCopyCodeForGithub = () => {
+    const code = `export const NEW_SIDEBAR_MENU: NavMenuCategory[] = ${JSON.stringify(categories, null, 2)};`;
+    navigator.clipboard.writeText(code).then(() => {
+      setCopiedCodeSuccess(true);
+      setNotification({
+        type: 'success',
+        message: 'คัดลอกโค้ด NEW_SIDEBAR_MENU เรียบร้อยแล้ว! นำไปวางทับใน src/data/sidebarMenuData.ts บน GitHub ได้เลย',
+      });
+      setTimeout(() => setCopiedCodeSuccess(false), 3500);
+    }).catch(() => {
+      alert('ไม่สามารถคัดลอกอัตโนมัติได้');
+    });
   };
 
   // Open Edit Form for an item
@@ -264,6 +283,12 @@ export const AdminMenuTopicsManager: React.FC = () => {
       return;
     }
 
+    const trimmedFileUrl = editForm.fileUrl.trim();
+    let trimmedFileName = editForm.fileName.trim();
+    if (trimmedFileUrl.includes('drive.google.com') && !trimmedFileName) {
+      trimmedFileName = 'เอกสารและภาพประกอบ (Google Drive)';
+    }
+
     const itemData: SubMenuItem = {
       id: editForm.itemId,
       title: editForm.title.trim(),
@@ -271,8 +296,8 @@ export const AdminMenuTopicsManager: React.FC = () => {
       description: editForm.description.trim() || undefined,
       content: editForm.content.trim() || undefined,
       imageUrl: editForm.imageUrl.trim() || undefined,
-      fileName: editForm.fileName.trim() || undefined,
-      fileUrl: editForm.fileUrl.trim() || undefined,
+      fileName: trimmedFileName || undefined,
+      fileUrl: trimmedFileUrl || undefined,
     };
 
     let updated: NavMenuCategory[];
@@ -457,7 +482,26 @@ export const AdminMenuTopicsManager: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCopyCodeForGithub}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-xs font-bold transition-colors shadow-2xs"
+            title="คัดลอกโค้ดข้อมูลเมนูทั้งหมด เพื่อนำไปวางทับใน src/data/sidebarMenuData.ts บน GitHub"
+          >
+            {copiedCodeSuccess ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-emerald-700 font-bold">คัดลอกโค้ดแล้ว!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 text-slate-600" />
+                <span>📋 คัดลอกโค้ดสำหรับ GitHub</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={handleResetToDefault}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition-colors"
@@ -473,6 +517,21 @@ export const AdminMenuTopicsManager: React.FC = () => {
             <Plus className="w-4 h-4" />
             <span>เพิ่มหัวข้อใหม่</span>
           </button>
+        </div>
+      </div>
+
+      {/* Info notice for mobile & GitHub Pages */}
+      <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-xs text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-start gap-2.5">
+          <span className="text-base">💡</span>
+          <div>
+            <span className="font-bold text-amber-900">
+              เมื่อแก้ไขรูปภาพหรือแนบเอกสารในหน้านี้แล้วต้องการให้มือถือและผู้เข้าชมทุกคนเห็น:
+            </span>
+            <p className="text-amber-800 mt-0.5 text-[11px]">
+              กดปุ่ม <span className="font-bold text-slate-900 bg-white px-1.5 py-0.5 rounded border border-slate-300">📋 คัดลอกโค้ดสำหรับ GitHub</span> ด้านบน แล้วนำไปวางทับในไฟล์ <code className="bg-amber-100 px-1 rounded font-mono text-amber-900">src/data/sidebarMenuData.ts</code> บน GitHub ได้ทันทีครับ
+            </p>
+          </div>
         </div>
       </div>
 
@@ -1022,8 +1081,21 @@ export const AdminMenuTopicsManager: React.FC = () => {
                   )}
                 </div>
 
-                <div className="text-[11px] text-slate-400">
-                  หรือระบุ URL ลิงก์เอกสารภายนอก:
+                <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-500">
+                  <span>หรือระบุ URL ลิงก์เอกสารภายนอก (Google Drive / คลาวด์):</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditForm((prev) => ({
+                        ...prev,
+                        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+                        fileName: prev.fileName || 'โฟลเดอร์เอกสารและรูปภาพ (Google Drive)',
+                      }));
+                    }}
+                    className="text-emerald-700 hover:text-emerald-800 font-semibold underline inline-flex items-center gap-1"
+                  >
+                    + ใส่ลิงก์ Google Drive (โฟลเดอร์ 11)
+                  </button>
                 </div>
                 <input
                   type="text"
@@ -1034,7 +1106,7 @@ export const AdminMenuTopicsManager: React.FC = () => {
                       setEditForm((prev) => ({ ...prev, fileUrl: val }));
                     }
                   }}
-                  placeholder="https://example.com/document.pdf"
+                  placeholder="https://drive.google.com/drive/folders/... หรือ https://example.com/document.pdf"
                   className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
