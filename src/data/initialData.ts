@@ -262,7 +262,7 @@ export const INITIAL_DOCUMENTS: DocumentDownload[] = [
     fileType: 'PDF',
     downloads: 1840,
     date: '10 ส.ค. 2568',
-    url: 'https://drive.google.com/file/d/ใส่ลิงก์ไฟล์กูเกิ้ลไดรฟ์ตรงนี้/view?usp=sharing',
+    url: 'https://drive.google.com/drive/folders/1VGMyRitHtv_-SVCHZgadW_zSVpUtm5LR?usp=sharing',
     isExternalLink: true,
   },
   {
