@@ -2,7 +2,7 @@ import { DrugItem, NewsItem, KnowledgeArticle, StepInfographic, DocumentDownload
 
 export const INITIAL_BANNER: BannerConfig = {
   headline: 'กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
-  subheadline: 'เข็มมุ่งสอดคล้องกับ รพ. : 3P safety และ Smart pharmacy',
+  subheadline: 'เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต 3P safety และ Smart pharmacy',
   hospitalName: 'VACHIRA PHUKET HOSPITAL PHARMACY',
   vision: `พันธกิจ:
 1. พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
