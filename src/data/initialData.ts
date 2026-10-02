@@ -1,14 +1,17 @@
 import { DrugItem, NewsItem, KnowledgeArticle, StepInfographic, DocumentDownload, QueueItem, AdminUser, BannerConfig, PharmacistConsultationItem } from '../types';
 
 export const INITIAL_BANNER: BannerConfig = {
-  headline: '3P safety และ Smart pharmacy',                           // ข้อความพาดหัวตัวใหญ่สีขาว
-  subheadline: '3P safety และ Smart pharmacy',                 // ข้อความพาดหัวรองสีเขียว
-  hospitalName: 'พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety',    // ชื่อหน่วยงาน
-  vision: 'ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย ', // สโลแกน / วิสัยทัศน์
-  badgeText: 'VACHIRA PHUKET HOSPITAL PHARMACY',       // ป้ายข้อความด้านบนสุด
-  primaryButtonText: 'ข้อมูลการใช้ยา',                   // ข้อความบนปุ่มสีเขียว
+  headline: 'กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
+  subheadline: 'เข็มมุ่งสอดคล้องกับ รพ. : 3P safety และ Smart pharmacy',
+  hospitalName: 'VACHIRA PHUKET HOSPITAL PHARMACY',
+  vision: `พันธกิจ:
+1. พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
+2. พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety
+3. ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย Service Excellence`,
+  badgeText: 'VACHIRAPHUKET HOSPITAL PHARMACY',
+  primaryButtonText: 'ข้อมูลการใช้ยา',
   secondaryButtonText: 'ปรึกษาเภสัชกร',
-  backgroundImageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRURP8J6w5eXDv_XeVf5q3bqRNGzAD6E0qiBUUxYT-w&s=10', // รูปภาพพื้นหลังอาคาร
+  backgroundImageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRURP8J6w5eXDv_XeVf5q3bqRNGzAD6E0qiBUUxYT-w&s=10',
 };
 
 export const INITIAL_DRUGS: DrugItem[] = [
