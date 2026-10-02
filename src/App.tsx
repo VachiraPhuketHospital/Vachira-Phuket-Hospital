@@ -105,7 +105,22 @@ export default function App() {
   const [adminSection, setAdminSection] = useState<AdminSection>('dashboard');
   const [currentAdminUser, setCurrentAdminUser] = useState<string>('ภก.อดิศักดิ์ (Admin)');
 
-  // Dynamic Data Store (persisted to localStorage when edited, changes reflect instantly)
+  // Dynamic Data Store with Auto-Cache Invalidation
+  const CODE_DATA_VERSION = 'vachira_phuket_data_v6';
+  try {
+    const activeVersion = localStorage.getItem('vachira_code_version');
+    if (activeVersion !== CODE_DATA_VERSION) {
+      localStorage.removeItem('vachira_phuket_banner');
+      localStorage.removeItem('vachira_phuket_documents');
+      localStorage.removeItem('vachira_phuket_sidebar_menu_v3');
+      localStorage.removeItem('vachira_phuket_sidebar_menu_v4');
+      localStorage.removeItem('vachira_phuket_sidebar_menu_v5');
+      localStorage.setItem('vachira_code_version', CODE_DATA_VERSION);
+    }
+  } catch (e) {
+    console.warn('Could not check localStorage version', e);
+  }
+
   function getStoredData<T>(key: string, fallback: T): T {
     try {
       const saved = localStorage.getItem(key);
@@ -124,9 +139,7 @@ export default function App() {
   const [infographics, setInfographics] = useState<StepInfographic[]>(() =>
     getStoredData('vachira_phuket_infographics', INITIAL_STEP_INFOGRAPHICS)
   );
-  const [bannerConfig, setBannerConfig] = useState<BannerConfig>(() =>
-    getStoredData('vachira_phuket_banner', INITIAL_BANNER)
-  );
+  const [bannerConfig, setBannerConfig] = useState<BannerConfig>(INITIAL_BANNER);
   const [news, setNews] = useState<NewsItem[]>(() =>
     getStoredData('vachira_phuket_news', INITIAL_NEWS)
   );
