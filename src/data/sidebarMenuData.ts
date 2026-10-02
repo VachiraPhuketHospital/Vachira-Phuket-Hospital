@@ -23,13 +23,35 @@ export interface NavMenuCategory {
   groups?: NestedSubGroup[];
 }
 
-export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v4';
+export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v6';
 
 export const getStoredSidebarMenu = (): NavMenuCategory[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SIDEBAR_MENU);
     if (raw) {
-      return JSON.parse(raw);
+      const parsed: NavMenuCategory[] = JSON.parse(raw);
+      // Auto-migrate: update about_vision with latest mission and drive links
+      for (const cat of parsed) {
+        if (cat.items) {
+          for (const it of cat.items) {
+            if (it.id === 'about_vision') {
+              it.fileUrl = 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing';
+              it.fileName = 'เอกสารและภาพประกอบ (Google Drive)';
+              it.description = 'เข็มมุ่งสอดคล้องกับ รพ. (3P safety และ Smart pharmacy) และพันธกิจ กลุ่มงานเภสัชกรรม';
+              it.content = `VACHIRA PHUKET HOSPITAL PHARMACY
+
+เข็มมุ่งสอดคล้องกับ รพ.:
+3P safety และ Smart pharmacy
+
+พันธกิจ:
+1. พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
+2. พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety
+3. ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย Service Excellence`;
+            }
+          }
+        }
+      }
+      return parsed;
     }
   } catch (err) {
     console.error('Failed to parse sidebar menu from localStorage:', err);
@@ -55,16 +77,17 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
       {
         id: 'about_vision',
         title: 'วิสัยทัศน์และพันธกิจ',
-        description: 'วิสัยทัศน์ พันธกิจ ค่านิยม และเป้าหมายการดำเนินงานกลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
+        description: 'เข็มมุ่งสอดคล้องกับ รพ. (3P safety และ Smart pharmacy) และพันธกิจ กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5nk7-GhnGTiApCURC5DckqXtv_0mzxEC59usc',
-        content: `วิสัยทัศน์ (Vision):
-"เป็นกลุ่มงานเภสัชกรรมชั้นนำระดับตติยภูมิ มุ่งมั่นสู่ความเป็นเลิศด้านการบริบาลทางเภสัชกรรมและระบบยาที่ปลอดภัย ด้วยเทคโนโลยีทันสมัยและบริการด้วยหัวใจ"
+        content: `VACHIRA PHUKET HOSPITAL PHARMACY
 
-พันธกิจ (Mission):
-1. พัฒนาระบบยาให้ได้มาตรฐานคุณภาพและความปลอดภัยในระดับสากล ปราศจากความคลาดเคลื่อนทางยาที่มีผลต่อผู้ป่วย
-2. ส่งเสริมการบริบาลทางเภสัชกรรมทั้งผู้ป่วยนอก ผู้ป่วยใน และคลินิกเฉพาะทางอย่างครอบคลุม
-3. ส่งเสริมการใช้ยาอย่างสมเหตุสมผล (Rational Drug Use; RDU) ในโรงพยาบาลและเครือข่ายปฐมภูมิ
-4. พัฒนาศักยภาพบุคลากร งานวิจัย นวัตกรรม และสารสนเทศทางเภสัชกรรมอย่างต่อเนื่อง`,
+เข็มมุ่งสอดคล้องกับ รพ.:
+3P safety และ Smart pharmacy
+
+พันธกิจ:
+1. พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
+2. พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety
+3. ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย Service Excellence`,
         fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
         fileName: 'เอกสารและภาพประกอบ (Google Drive)'
       }
