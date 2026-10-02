@@ -23,24 +23,38 @@ export interface NavMenuCategory {
   groups?: NestedSubGroup[];
 }
 
-export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v6';
+export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v8';
 
 export const getStoredSidebarMenu = (): NavMenuCategory[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SIDEBAR_MENU);
     if (raw) {
       const parsed: NavMenuCategory[] = JSON.parse(raw);
-      // Auto-migrate: update about_vision with latest mission and drive links
+      // Auto-migrate: ensure news_pr has the main news item and about_vision is updated
       for (const cat of parsed) {
+        if (cat.id === 'news_pr') {
+          if (!cat.items?.some(i => i.id === 'news')) {
+            cat.items = [
+              {
+                id: 'news',
+                title: 'ข่าวสารและกิจกรรมกลุ่มงานเภสัชกรรม',
+                description: 'ข่าวสาร ประชาสัมพันธ์ กิจกรรมสัปดาห์เภสัชกรรม และประกาศเตือนภัยสุขภาพ',
+                content: 'ศูนย์รวมข่าวสาร ประชาสัมพันธ์กิจกรรมกลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต และประกาศเตือนภัยด้านยาและสุขภาพ',
+                badge: 'อัปเดต'
+              },
+              ...(cat.items || [])
+            ];
+          }
+        }
         if (cat.items) {
           for (const it of cat.items) {
             if (it.id === 'about_vision') {
               it.fileUrl = 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing';
               it.fileName = 'เอกสารและภาพประกอบ (Google Drive)';
-              it.description = 'เข็มมุ่งสอดคล้องกับ รพ. (3P safety และ Smart pharmacy) และพันธกิจ กลุ่มงานเภสัชกรรม';
+              it.description = 'เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต (3P safety และ Smart pharmacy) และพันธกิจ กลุ่มงานเภสัชกรรม';
               it.content = `VACHIRA PHUKET HOSPITAL PHARMACY
 
-เข็มมุ่งสอดคล้องกับ รพ.:
+เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต:
 3P safety และ Smart pharmacy
 
 พันธกิจ:
@@ -77,11 +91,11 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
       {
         id: 'about_vision',
         title: 'วิสัยทัศน์และพันธกิจ',
-        description: 'เข็มมุ่งสอดคล้องกับ รพ. (3P safety และ Smart pharmacy) และพันธกิจ กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
+        description: 'เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต (3P safety และ Smart pharmacy) และพันธกิจ กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5nk7-GhnGTiApCURC5DckqXtv_0mzxEC59usc',
         content: `VACHIRA PHUKET HOSPITAL PHARMACY
 
-เข็มมุ่งสอดคล้องกับ รพ.:
+เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต:
 3P safety และ Smart pharmacy
 
 พันธกิจ:
@@ -478,6 +492,13 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
     title: 'ข่าว/ประชาสัมพันธ์',
     iconName: 'Newspaper',
     items: [
+      {
+        id: 'news',
+        title: 'ข่าวสารและกิจกรรมกลุ่มงานเภสัชกรรม',
+        description: 'ข่าวสาร ประชาสัมพันธ์ กิจกรรมสัปดาห์เภสัชกรรม และประกาศเตือนภัยสุขภาพ',
+        content: 'ศูนย์รวมข่าวสาร ประชาสัมพันธ์กิจกรรมกลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต และประกาศเตือนภัยด้านยาและสุขภาพ',
+        badge: 'อัปเดต'
+      },
       {
         id: 'news_journal',
         title: 'วารสารเภสัชกรรมโรงพยาบาล',
