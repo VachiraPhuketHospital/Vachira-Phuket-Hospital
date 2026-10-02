@@ -3,12 +3,12 @@ import { DrugItem, NewsItem, KnowledgeArticle, StepInfographic, DocumentDownload
 export const INITIAL_BANNER: BannerConfig = {
   headline: 'กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
   subheadline: 'เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต 3P safety และ Smart pharmacy',
-  hospitalName: 'VACHIRA PHUKET HOSPITAL PHARMACY',
+  hospitalName: 'VACHIRAPHUKET HOSPITAL PHARMACY',
   vision: `พันธกิจ:
 1. พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
 2. พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety
 3. ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย Service Excellence`,
-  badgeText: 'VACHIRAPHUKET HOSPITAL PHARMACY',
+  badgeText: 'VACHIRA PHUKET HOSPITAL PHARMACY',
   primaryButtonText: 'ข้อมูลการใช้ยา',
   secondaryButtonText: 'ปรึกษาเภสัชกร',
   backgroundImageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRURP8J6w5eXDv_XeVf5q3bqRNGzAD6E0qiBUUxYT-w&s=10',
