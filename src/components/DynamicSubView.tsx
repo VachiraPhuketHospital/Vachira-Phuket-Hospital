@@ -12,7 +12,9 @@ import {
   Users,
   CheckCircle,
   ArrowRight,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Target,
+  HeartPulse
 } from 'lucide-react';
 import { NEW_SIDEBAR_MENU, getStoredSidebarMenu, SubMenuItem } from '../data/sidebarMenuData';
 
@@ -175,57 +177,70 @@ export const DynamicSubView: React.FC<DynamicSubViewProps> = ({ sectionId }) => 
           </div>
         )}
 
-        {/* Custom Article / Content Added by Admin */}
-        {foundItem?.content && (
-          <div className="p-6 rounded-xl bg-slate-50/70 border border-slate-200 space-y-3">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-emerald-600" />
-              รายละเอียดและคำแนะนำ (Content Details)
-            </h3>
-            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line font-sans">
-              {foundItem.content}
-            </div>
-          </div>
-        )}
-
-        {/* Detailed Sections based on default topic */}
-        {sectionId === 'about_vision' && !foundItem?.content && (
+        {/* Special Render for about_vision (เข็มมุ่ง & พันธกิจ) */}
+        {sectionId === 'about_vision' ? (
           <div className="space-y-6">
-            <div className="p-5 rounded-xl bg-emerald-50/70 border border-emerald-200">
-              <h3 className="font-bold text-emerald-950 text-lg mb-2 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-emerald-700" />
-                วิสัยทัศน์ (Vision)
+            {/* เข็มมุ่ง Banner */}
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-teal-950 to-emerald-950 text-white border border-emerald-500/40 shadow-lg">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold mb-3 backdrop-blur-md">
+                <HeartPulse className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <span>VACHIRA PHUKET HOSPITAL PHARMACY</span>
+              </div>
+              <h3 className="font-bold text-lg sm:text-xl text-emerald-300 mb-2 flex items-center gap-2">
+                <Target className="w-5 h-5 text-emerald-400" />
+                เข็มมุ่งสอดคล้องกับ รพ.
               </h3>
-              <p className="text-emerald-900 text-sm leading-relaxed">
-                "เป็นกลุ่มงานเภสัชกรรมชั้นนำระดับตติยภูมิ มุ่งมั่นสู่ความเป็นเลิศด้านการบริบาลทางเภสัชกรรมและระบบยาที่ปลอดภัย ด้วยเทคโนโลยีทันสมัยและบริการด้วยหัวใจ"
+              <p className="text-white text-xl sm:text-2xl font-extrabold tracking-wide">
+                3P safety และ Smart pharmacy
               </p>
             </div>
 
-            <div className="p-5 rounded-xl bg-slate-50 border border-slate-200">
-              <h3 className="font-bold text-slate-900 text-lg mb-3 flex items-center gap-2">
+            {/* พันธกิจ (Mission) Card */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
+              <h3 className="font-bold text-slate-900 text-lg mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
                 <CheckCircle className="w-5 h-5 text-emerald-600" />
                 พันธกิจ (Mission)
               </h3>
-              <ul className="space-y-2.5 text-sm text-slate-700">
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-600">1.</span>
-                  <span>พัฒนาระบบยาให้ได้มาตรฐานคุณภาพและความปลอดภัยในระดับสากล ปราศจากความคลาดเคลื่อนทางยาที่มีผลต่อผู้ป่วย</span>
+              <ul className="space-y-3.5 text-sm sm:text-base text-slate-800">
+                <li className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                    1
+                  </span>
+                  <span className="leading-relaxed font-medium pt-0.5">
+                    พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
+                  </span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-600">2.</span>
-                  <span>ส่งเสริมการบริบาลทางเภสัชกรรมทั้งผู้ป่วยนอก ผู้ป่วยใน และคลินิกเฉพาะทางอย่างครอบคลุม</span>
+                <li className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                    2
+                  </span>
+                  <span className="leading-relaxed font-medium pt-0.5">
+                    พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety
+                  </span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-600">3.</span>
-                  <span>ส่งเสริมการใช้ยาอย่างสมเหตุสมผล (Rational Drug Use; RDU) ในโรงพยาบาลและเครือข่ายปฐมภูมิ</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-600">4.</span>
-                  <span>พัฒนาศักยภาพบุคลากร งานวิจัย นวัตกรรม และสารสนเทศทางเภสัชกรรมอย่างต่อเนื่อง</span>
+                <li className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                    3
+                  </span>
+                  <span className="leading-relaxed font-medium pt-0.5">
+                    ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย Service Excellence
+                  </span>
                 </li>
               </ul>
             </div>
           </div>
+        ) : (
+          foundItem?.content && (
+            <div className="p-6 rounded-xl bg-slate-50/70 border border-slate-200 space-y-3">
+              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-emerald-600" />
+                รายละเอียดและคำแนะนำ (Content Details)
+              </h3>
+              <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line font-sans">
+                {foundItem.content}
+              </div>
+            </div>
+          )
         )}
 
         {sectionId.startsWith('struct_') && !foundItem?.content && (
