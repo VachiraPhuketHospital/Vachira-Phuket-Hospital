@@ -106,7 +106,7 @@ export default function App() {
   const [currentAdminUser, setCurrentAdminUser] = useState<string>('ภก.อดิศักดิ์ (Admin)');
 
   // Dynamic Data Store with Auto-Cache Invalidation
-  const CODE_DATA_VERSION = 'vachira_phuket_data_v6';
+  const CODE_DATA_VERSION = 'vachira_phuket_data_v7';
   try {
     const activeVersion = localStorage.getItem('vachira_code_version');
     if (activeVersion !== CODE_DATA_VERSION) {
@@ -115,6 +115,7 @@ export default function App() {
       localStorage.removeItem('vachira_phuket_sidebar_menu_v3');
       localStorage.removeItem('vachira_phuket_sidebar_menu_v4');
       localStorage.removeItem('vachira_phuket_sidebar_menu_v5');
+      localStorage.removeItem('vachira_phuket_sidebar_menu_v6');
       localStorage.setItem('vachira_code_version', CODE_DATA_VERSION);
     }
   } catch (e) {
