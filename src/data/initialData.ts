@@ -1,11 +1,11 @@
 import { DrugItem, NewsItem, KnowledgeArticle, StepInfographic, DocumentDownload, QueueItem, AdminUser, BannerConfig, PharmacistConsultationItem } from '../types';
 
 export const INITIAL_BANNER: BannerConfig = {
-  headline: 'ดูแลด้วยหัวใจ',
-  subheadline: 'ปลอดภัยด้วยเรื่องการใช้ยา',
-  hospitalName: 'กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
-  vision: 'มุ่งเน้นการให้บริการด้านยาอย่างมีคุณภาพ ถูกต้อง รวดเร็ว และได้มาตรฐานสากล',
-  badgeText: 'VACHIRA PHUKET HOSPITAL PHARMACY',
+  headline: 'เข็มมุ่งสอดคล้องกับ รพ.',
+  subheadline: '3P safety และ Smart pharmacy',
+  hospitalName: 'พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม',
+  vision: 'พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety',
+  badgeText: 'VACHIRAPHUKET HOSPITAL PHARMACY',
   primaryButtonText: 'ข้อมูลการใช้ยา',
   secondaryButtonText: 'ปรึกษาเภสัชกร',
 };
