@@ -61,16 +61,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           {isEn ? t.headline : bannerConfig.headline}
         </h1>
 
-        {/* เข็มมุ่งสอดคล้องกับ รพ. */}
-        <div className="inline-block mx-auto mb-6 px-5 py-2.5 rounded-2xl bg-emerald-950/80 border border-emerald-400/40 text-emerald-200 shadow-lg backdrop-blur-md max-w-xl">
-          <div className="text-[11px] sm:text-xs uppercase tracking-wider text-emerald-300 font-semibold mb-0.5 flex items-center justify-center gap-1.5">
-            <Target className="w-3.5 h-3.5 text-emerald-400" />
-            <span>เข็มมุ่งสอดคล้องกับ รพ.</span>
+        {/* ข้อความพาดหัวรอง / เข็มมุ่ง */}
+        {bannerConfig.subheadline && (
+          <div className="inline-block mx-auto mb-6 px-6 py-3 rounded-2xl bg-emerald-950/80 border border-emerald-400/40 text-emerald-200 shadow-lg backdrop-blur-md max-w-2xl">
+            <div className="text-base sm:text-xl font-bold text-white tracking-wide">
+              {isEn ? t.subheadline : bannerConfig.subheadline}
+            </div>
           </div>
-          <div className="text-base sm:text-xl font-bold text-white tracking-wide">
-            {isEn ? t.subheadline : (bannerConfig.subheadline || '3P safety และ Smart pharmacy')}
-          </div>
-        </div>
+        )}
 
         {/* พันธกิจ (Mission) Card */}
         {missions.length > 0 ? (
