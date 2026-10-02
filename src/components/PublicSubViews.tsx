@@ -44,6 +44,7 @@ interface PublicSubViewsProps {
   onDownloadDocument?: (docId: string) => void;
   onOpenConsultModal?: () => void;
   onOpenQueueModal?: () => void;
+  onNavigate?: (section: PublicNavSection) => void;
 }
 
 export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
@@ -59,6 +60,7 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
   onDownloadDocument,
   onOpenConsultModal,
   onOpenQueueModal,
+  onNavigate,
 }) => {
   const [filterQuery, setFilterQuery] = useState('');
   const [docSearchQuery, setDocSearchQuery] = useState('');
@@ -709,7 +711,8 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
       // -------------------------------------------------------------
       // ข่าวสารกิจกรรม
       // -------------------------------------------------------------
-      case 'news': {
+      case 'news':
+      case 'news_pr': {
         const publishedNews = news.filter((item) => item.published !== false);
         const availableCategories = [
           'ทั้งหมด',
@@ -1094,7 +1097,14 @@ export const PublicSubViews: React.FC<PublicSubViewsProps> = ({
       }
 
       default:
-        return <DynamicSubView sectionId={section} />;
+        return (
+          <DynamicSubView
+            sectionId={section}
+            news={news}
+            onOpenNewsDetail={onOpenNewsDetail}
+            onNavigateToNews={() => onNavigate ? onNavigate('news') : undefined}
+          />
+        );
     }
   };
 
