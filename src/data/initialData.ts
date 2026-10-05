@@ -8,7 +8,7 @@ subheadline: `เข็มมุ่งสอดคล้องกับ โร�
 1. พัฒนางานเภสัชกรรมตามมาตรฐานวิชาชีพเภสัชกรรม
 2. พัฒนาระบบงานบริการให้สอดคล้องกับ Smart Hospital และ 3P safety
 3. ส่งเสริมการบริการทางเภสัชกรรม และพัฒนาสมรรถนะของบุคลากร ตามนโยบาย Service Excellence`,
-  badgeText: 'VACHIRA PHUKET HOSPITAL PHARMACY',
+  badgeText: 'VACHIRAPHUKET HOSPITAL PHARMACY',
   primaryButtonText: 'ข้อมูลการใช้ยา',
   secondaryButtonText: 'ปรึกษาเภสัชกร',
   backgroundImageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRURP8J6w5eXDv_XeVf5q3bqRNGzAD6E0qiBUUxYT-w&s=10',
