@@ -33,7 +33,8 @@ export const TRANSLATIONS = {
     adminLogin: 'สำหรับเจ้าหน้าที่',
     badgeText: 'VACHIRA PHUKET HOSPITAL PHARMACY',
     headline: 'กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต',
-    subheadline: '3P safety และ Smart pharmacy',
+    subheadline: `เข็มมุ่งสอดคล้องกับ โรงพยาบาลวชิระภูเก็ต
+3P safety และ Smart pharmacy`,
     primaryButtonText: 'ข้อมูลการใช้ยา',
     secondaryButtonText: 'ปรึกษาเภสัชกร',
     highlight24h: 'เภสัชกรวิชาชีพ 24 ชม.',
