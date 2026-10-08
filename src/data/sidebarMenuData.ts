@@ -23,13 +23,31 @@ export interface NavMenuCategory {
   groups?: NestedSubGroup[];
 }
 
-export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v8';
+export const STORAGE_KEY_SIDEBAR_MENU = 'vachira_phuket_sidebar_menu_v12';
 
 export const getStoredSidebarMenu = (): NavMenuCategory[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SIDEBAR_MENU);
     if (raw) {
       const parsed: NavMenuCategory[] = JSON.parse(raw);
+
+      // Auto-migrate: ensure due_evaluation with 1-6 sub-items is present
+      const defaultDue = NEW_SIDEBAR_MENU.find(c => c.id === 'due_evaluation');
+      if (defaultDue) {
+        const existingIdx = parsed.findIndex(c => c.id === 'due_evaluation');
+        if (existingIdx === -1) {
+          const insertIdx = parsed.findIndex(c => c.id === 'drug_info_guidelines');
+          if (insertIdx !== -1) {
+            parsed.splice(insertIdx + 1, 0, defaultDue);
+          } else {
+            parsed.push(defaultDue);
+          }
+        } else {
+          // Keep due_evaluation sub-items up to date
+          parsed[existingIdx] = defaultDue;
+        }
+      }
+
       // Auto-migrate: ensure news_pr has the main news item and about_vision is updated
       for (const cat of parsed) {
         if (cat.id === 'news_pr') {
@@ -355,6 +373,76 @@ export const NEW_SIDEBAR_MENU: NavMenuCategory[] = [
             content: 'บริการตอบคำถามด้านยา ติดต่อกลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต โทรศัพท์สายใน หรือส่งคำถามผ่านระบบออนไลน์'
           }
         ]
+      }
+    ]
+  },
+  {
+    id: 'due_evaluation',
+    title: 'การประเมินความเหมาะสมการใช้ยา (DUE)',
+    iconName: 'ClipboardCheck',
+    items: [
+      {
+        id: 'due_all',
+        title: 'ภาพรวมระบบประเมินการใช้ยา (DUE)',
+        badge: 'DUE',
+        description: 'รวมรายการยาที่ประเมินความเหมาะสมการใช้ 6 กลุ่ม แบบฟอร์ม และแนวทางการสั่งใช้ยา',
+        content: 'รายการยาที่ประเมินความเหมาะสมการใช้ กลุ่มงานเภสัชกรรม โรงพยาบาลวชิระภูเก็ต ครอบคลุม Albumin, NOAC, ยาปฏิชีวนะมูลค่าสูง, DM & Obesity, Osteoporosis และ Levetiracetam injection',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'คลังแบบประเมิน DUE (Google Drive)'
+      },
+      {
+        id: 'due_albumin',
+        title: '1. แบบประเมิน Albumin (DUE_Albumin)',
+        badge: 'Albumin',
+        description: 'แบบประเมินความเหมาะสมการใช้ Albumin (DUE_Albumin)',
+        content: 'เกณฑ์การประเมินข้อบ่งใช้และแบบฟอร์มขอใช้ Albumin ในผู้ป่วย Large-volume paracentesis, SBP, Hepatorenal syndrome, และ Severe Hypoalbuminemia',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'DUE_Albumin (PDF)'
+      },
+      {
+        id: 'due_noac',
+        title: '2. ยากลุ่ม NOAC & Antidote',
+        badge: 'NOAC',
+        description: 'แบบประเมิน NOAC, หนังสือแสดงความยินยอม และคำแนะนำการเตรียมยาต้านพิษ',
+        content: 'Apixaban, Dabigatran, Edoxaban, Rivaroxaban พร้อม Specific Antidote (Idarucizumab) และ Non-specific Antidote (PROTHROMPLEX, FEIBA)',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'DUE_NOAC_2568_12_2 (PDF)'
+      },
+      {
+        id: 'due_atb',
+        title: '3. ยาปฏิชีวนะมูลค่าสูง (Controlled ATB)',
+        badge: 'Controlled ATB',
+        description: 'แบบขออนุมัติใช้ยาต้านจุลชีพชนิดควบคุม 7 รายการ',
+        content: 'Piperacillin/Tazobactam, Meropenem, Imipenem/Cilastatin, Sulbactam, Colistin, Tigecycline, Vancomycin',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'DUE_ATB_2568_11_24 (PDF)'
+      },
+      {
+        id: 'due_dm_obesity',
+        title: '4. Diabetic mellitus and Obesity',
+        badge: 'GLP-1/GIP',
+        description: 'คู่มือ MyPen, Ozempic, Wegovy, Mounjaro',
+        content: 'Semaglutide (Ozempic, Wegovy), Tirzepatide (Mounjaro) และคำแนะนำการใช้ปากกาฉีดยาอินซูลิน MyPen',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'Ozempic_2568_12_15 / Wegovy_2596_03_10'
+      },
+      {
+        id: 'due_osteoporosis',
+        title: '5. ยาโรคกระดูกพรุน (Teriparatide ว 548)',
+        badge: 'Teriparatide',
+        description: 'Teriparatide 600 mcg/2.4 mL (FORTEO) และเอกสาร กรมบัญชีกลาง ว 548',
+        content: 'แนวทางและแบบฟอร์มเบิกจ่ายยา Teriparatide ตามหนังสือกรมบัญชีกลาง ว 548',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: '2569_ว_548_Teriparatide (PDF)'
+      },
+      {
+        id: 'due_levetiracetam',
+        title: '6. Levetiracetam 500 mg/5 mL Inj',
+        badge: 'Levetiracetam',
+        description: 'แบบประเมินความเหมาะสมการใช้ยา Levetiracetam injection',
+        content: 'เกณฑ์การสั่งใช้ยา Levetiracetam 500 mg/5 mL injection ในผู้ป่วยชักและข้อบ่งชี้ทางระบบประสาท',
+        fileUrl: 'https://drive.google.com/drive/folders/1PZs5h3ADWSp-KEzNUTol4M_8qvBFyxpd?usp=sharing',
+        fileName: 'DUE_Levetiracetam_2569_07_07 (PDF)'
       }
     ]
   },
