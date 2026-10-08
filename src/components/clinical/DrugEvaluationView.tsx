@@ -40,7 +40,7 @@ export const DrugEvaluationView: React.FC<DrugEvaluationViewProps> = ({
   // 'overview' = หน้าภาพรวมทั้ง 6 กลุ่ม, หรือ id เฉพาะ เช่น 'due_albumin'
   const [activeSectionId, setActiveSectionId] = useState<string>('overview');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'cards' | 'document'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'document'>('document');
 
   useEffect(() => {
     if (initialSectionId && initialSectionId !== 'due_evaluation' && initialSectionId !== 'due_all') {
@@ -178,17 +178,6 @@ export const DrugEvaluationView: React.FC<DrugEvaluationViewProps> = ({
             <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl">
               <button
                 type="button"
-                onClick={() => setViewMode("cards")}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === "cards"
-                    ? "bg-white text-emerald-800 shadow-xs font-semibold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>🗂️ การ์ด 6 หมวด (ภาพรวม & รายละเอียดยา)</span>
-              </button>
-              <button
-                type="button"
                 onClick={() => setViewMode("document")}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
                   viewMode === "document"
@@ -196,7 +185,18 @@ export const DrugEvaluationView: React.FC<DrugEvaluationViewProps> = ({
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <span>📋 รายการยา & รหัสเอกสารตามประกาศ (แยกโค้ดแก้ไขง่าย)</span>
+                <span>📋 รายการยา & รหัสเอกสารตามประกาศ (หัวข้อ 1–6)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("cards")}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === "cards"
+                    ? "bg-white text-emerald-800 shadow-xs font-semibold"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>🗂️ การ์ดข้อมูลและเกณฑ์ทางคลินิก (6 หมวด)</span>
               </button>
             </div>
             <div className="text-xs text-slate-500 px-2 flex items-center gap-1">
