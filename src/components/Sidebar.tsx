@@ -8,6 +8,7 @@ import {
   Newspaper,
   GraduationCap,
   CalendarCheck,
+  ClipboardCheck,
   ChevronDown,
   ChevronRight,
   Lock,
@@ -66,6 +67,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         return <GraduationCap className="w-5 h-5 text-purple-600 shrink-0" />;
       case 'CalendarCheck':
         return <CalendarCheck className="w-5 h-5 text-rose-600 shrink-0" />;
+      case 'ClipboardCheck':
+        return <ClipboardCheck className="w-5 h-5 text-emerald-600 shrink-0" />;
       default:
         return <Pill className="w-5 h-5 text-emerald-600 shrink-0" />;
     }
@@ -167,15 +170,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* New Dynamic Menu Sections */}
           {categories.map((category) => {
             const isCatExpanded = !!expandedCategories[category.id];
+            const isCategoryActive =
+              category.id === 'due_evaluation'
+                ? activeSection === 'due_evaluation' ||
+                  activeSection === 'due_all' ||
+                  (typeof activeSection === 'string' && activeSection.startsWith('due_'))
+                : false;
 
             return (
               <div key={category.id} className="pt-1 border-t border-slate-100/80">
-                {/* Category Header Button */}
                 <button
                   id={`menu-toggle-${category.id}`}
-                  onClick={() => toggleCategory(category.id)}
+                  onClick={() => {
+                    toggleCategory(category.id);
+                    if (category.id === 'due_evaluation' && !isCatExpanded) {
+                      handleSelect('due_all');
+                    }
+                  }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                    isCatExpanded
+                    isCategoryActive
+                      ? 'text-emerald-800 bg-emerald-50/80 font-bold border-l-4 border-emerald-600'
+                      : isCatExpanded
                       ? 'text-slate-900 bg-slate-50'
                       : 'text-slate-700 hover:bg-slate-50'
                   }`}
