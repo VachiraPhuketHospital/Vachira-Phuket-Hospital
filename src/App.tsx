@@ -1,7 +1,7 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -106,23 +106,14 @@ export default function App() {
   const [currentAdminUser, setCurrentAdminUser] = useState<string>('ภก.อดิศักดิ์ (Admin)');
 
   // Dynamic Data Store with Auto-Cache Invalidation
-  const CODE_DATA_VERSION = 'vachira_phuket_data_v13';
+  const CODE_DATA_VERSION = 'vachira_phuket_data_v17';
   try {
     const activeVersion = localStorage.getItem('vachira_code_version');
     if (activeVersion !== CODE_DATA_VERSION) {
-      localStorage.removeItem('vachira_phuket_banner');
-      localStorage.removeItem('vachira_phuket_documents');
       localStorage.removeItem('vachira_phuket_sidebar_menu');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v3');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v4');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v5');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v6');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v7');
       localStorage.removeItem('vachira_phuket_sidebar_menu_v8');
       localStorage.removeItem('vachira_phuket_sidebar_menu_v9');
       localStorage.removeItem('vachira_phuket_sidebar_menu_v10');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v11');
-      localStorage.removeItem('vachira_phuket_sidebar_menu_v12');
       localStorage.setItem('vachira_code_version', CODE_DATA_VERSION);
     }
   } catch (e) {
@@ -573,6 +564,7 @@ export default function App() {
               language={language}
               onOpenDrugGuide={() => handleSelectPublicSection('drugs_usage')}
               onOpenConsult={() => setIsConsultOpen(true)}
+              onOpenDueEvaluation={() => handleSelectPublicSection('due_all')}
             />
 
             {/* News & Announcements Section (ประชาสัมพันธ์ & อัปเดต ข่าวสารและกิจกรรมกลุ่มงานเภสัชกรรม) */}
